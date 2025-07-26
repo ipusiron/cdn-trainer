@@ -1,54 +1,51 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CDN Trainer</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>CDN Trainer</h1>
-      <p class="subtitle">
-        攻撃者から見えるサーバーの姿とは？<br />
-        CDN・WAF・オリジン構成の違いを体験しながら学べます
-      </p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDN Trainer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>CDN Trainer</h1>
+    <p class="subtitle">
+      攻撃者から見えるサーバーの姿とは？<br />
+      CDN・WAF・オリジン構成の違いを体験しながら学べます
+    </p>
+  </header>
 
-    <main>
-      <section class="config-selector">
-        <h2>構成パターンを選択してください</h2>
-        <div class="button-group">
-          <button onclick="selectPreset(0)">✅ 安全な構成</button>
-          <button onclick="selectPreset(1)">△ やや不安な構成</button>
-          <button onclick="selectPreset(2)">❌ 危険な構成</button>
-        </div>
-      </section>
+  <main>
+    <section class="custom-config">
+      <h2>🛠 カスタム構成モード</h2>
+      <form id="configForm">
+        <label><input type="checkbox" id="cdn" checked /> CDN を有効にする</label><br />
+        <label><input type="checkbox" id="waf" checked /> WAF を有効にする</label><br />
+        <label><input type="checkbox" id="iplimit" checked /> Origin にIP制限をかける</label><br />
+        <button type="button" onclick="evaluateConfig()">構成を診断する</button>
+      </form>
+    </section>
 
-      <section class="diagram-section">
-        <h2>構成図</h2>
-        <div id="diagram" class="diagram-box">
-          <!-- 構成図がここに描画される -->
-        </div>
-      </section>
+    <section class="diagram-section">
+      <h2>構成図</h2>
+      <div id="diagram" class="diagram-box"></div>
+    </section>
 
-      <section class="diagnosis-section">
-        <h2>診断コメント</h2>
-        <div id="diagnosis" class="diagnosis-box">
-          <!-- 評価コメントがここに表示される -->
-        </div>
-      </section>
-    </main>
+    <section class="diagnosis-section">
+      <h2>診断コメント</h2>
+      <div id="diagnosis" class="diagnosis-box"></div>
+    </section>
+  </main>
 
-    <footer>
-      <div class="footer">
-        🔗 GitHubリポジトリはこちら（
-        <a href="https://github.com/ipusiron/cdn-trainer" target="_blank">
-          ipusiron/cdn-trainer </a
-        >）
-      </div>
-    </footer>
+  <footer>
+    <div class="footer">
+      🔗 GitHubリポジトリはこちら（
+      <a href="https://github.com/ipusiron/cdn-trainer" target="_blank">
+        ipusiron/cdn-trainer
+      </a>）
+    </div>
+  </footer>
 
-    <script src="script.js"></script>
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>

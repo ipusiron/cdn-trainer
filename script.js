@@ -1,75 +1,58 @@
-function selectPreset(index) {
-  const diagramBox = document.getElementById('diagram');
-  const diagnosisBox = document.getElementById('diagnosis');
+function evaluateConfig() {
+  const cdn = document.getElementById('cdn').checked;
+  const waf = document.getElementById('waf').checked;
+  const iplimit = document.getElementById('iplimit').checked;
 
-  const presets = [
-    {
-      name: '安全な構成',
-      svg: `
-<svg width="100%" height="100" xmlns="http://www.w3.org/2000/svg">
-  <text x="20" y="50">👤 Client</text>
-  <line x1="80" y1="45" x2="140" y2="45" stroke="black" />
-  <text x="150" y="50">☁️ CDN</text>
-  <line x1="210" y1="45" x2="270" y2="45" stroke="black" />
-  <text x="280" y="50">🧱 WAF</text>
-  <line x1="340" y1="45" x2="400" y2="45" stroke="black" />
-  <text x="410" y="50">🖥 Origin</text>
-</svg>
-    `,
-      diagnosis: `
-✅ この構成は比較的安全です。
+  const diagram = document.getElementById('diagram');
+  const diagnosis = document.getElementById('diagnosis');
 
-- CDNを通してトラフィックを処理するため、直接攻撃が困難です。
-- WAFがONで、アプリ層攻撃にも対応。
-- OriginサーバーはCDNのIP範囲からのみアクセスを許可しています。
+  // SVG構成図の構築
+  let svg = `<svg width="100%" height="100" xmlns="http://www.w3.org/2000/svg">
+    <text x="20" y="50">👤 Client</text>`;
 
-→ 改善点は特にありませんが、継続的な監視は重要です。
-    `,
-    },
-    {
-      name: 'やや不安な構成',
-      svg: `
-<svg width="100%" height="100" xmlns="http://www.w3.org/2000/svg">
-  <text x="20" y="50">👤 Client</text>
-  <line x1="80" y1="45" x2="140" y2="45" stroke="black" />
-  <text x="150" y="50">☁️ CDN</text>
-  <line x1="210" y1="45" x2="270" y2="45" stroke="black" />
-  <text x="280" y="50">🖥 Origin</text>
-</svg>
-    `,
-      diagnosis: `
-⚠️ CDNは導入されていますが、いくつかリスクがあります。
-
-- WAFが無効なため、XSSやSQLiなどのアプリ層攻撃が通過します。
-- Origin Serverが世界中に公開されており、CDNバイパスの可能性があります。
-
-→ WAFの有効化とIP制限の設定を検討しましょう。
-    `,
-    },
-    {
-      name: '危険な構成',
-      svg: `
-<svg width="100%" height="100" xmlns="http://www.w3.org/2000/svg">
-  <text x="20" y="50">👤 Client</text>
-  <line x1="80" y1="45" x2="140" y2="45" stroke="red" stroke-dasharray="5,5"/>
-  <text x="150" y="50">🖥 Origin</text>
-</svg>
-    `,
-      diagnosis: `
-❌ 非常に危険な構成です。
-
-- 全てのアクセスが直接Originに届くため、DDoSやスキャンの対象になります。
-- WAFやCDNによる防御が存在しません。
-- 攻撃者から見て「開かれたサーバー」となっています。
-
-→ 最低限、CDN＋WAFの導入とIP制限を行ってください。
-    `,
-    },
-  ];
-
-  const preset = presets[index];
-  if (preset) {
-    diagramBox.innerHTML = preset.svg;
-    diagnosisBox.innerHTML = preset.diagnosis.replace(/\n/g, '<br>');
+  let x = 80;
+  if (cdn) {
+    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
+    svg += `<text x="${x + 70}" y="50">☁️ CDN</text>`;
+    x += 130;
   }
+  if (waf) {
+    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
+    svg += `<text x="${x + 70}" y="50">🧱 WAF</text>`;
+    x += 130;
+  }
+  svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
+  svg += `<text x="${x + 70}" y="50">🖥 Origin</text></svg>`;
+
+  diagram.innerHTML = svg;
+
+  // 評価ロジック
+  let score = 0;
+  if (cdn) score += 1;
+  if (waf) score += 1;
+  if (iplimit) score += 1;
+
+  let comment = `セキュリティ評価：${score}/3（CDN・WAF・IP制限の3項目で判定）<br>`;
+
+  if (score === 3) {
+    comment += `セキュリティレベル：最高<br><br>`;
+    comment += `✅ 安全性の高い構成です。複数の防御レイヤーが有効化されています。<br>`;
+  } else if (score === 2) {
+    comment += `セキュリティレベル：高い<br><br>`;
+    comment += `⚠️ 構成には一部リスクがあります。追加の防御が推奨されます。<br>`;
+  } else if (score === 1) {
+    comment += `セキュリティレベル：低い<br><br>`;
+    comment += `⚠️ 複数の重要な防御が無効になっています。構成の見直しを推奨します。<br>`;
+  } else {
+    comment += `セキュリティレベル：最低<br><br>`;
+    comment += `❌ 危険な構成です。CDN/WAF/IP制限を検討してください。<br>`;
+  }
+
+  if (!cdn)
+    comment += `<br>・CDNが無効のため、トラフィックが直接Originへ届きます。`;
+  if (!waf) comment += `<br>・WAFが無効のため、アプリ層攻撃を防げません。`;
+  if (!iplimit)
+    comment += `<br>・IP制限がないため、誰でもOriginにアクセス可能です。`;
+
+  diagnosis.innerHTML = comment;
 }
