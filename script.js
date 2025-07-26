@@ -106,8 +106,13 @@ function evaluateConfig() {
     comment += `❌ 危険な構成です。CDN/WAF/IP制限を検討してください。<br>`;
   }
 
-  if (!cdn) comment += `<br>・CDNが無効のため、トラフィックが直接Originへ届きます。`;
-  if (!waf) comment += `<br>・WAFが無効のため、アプリ層攻撃を防げません。`;
+  if (!cdn && !waf) {
+    comment += `<br>・CDNとWAFが無効のため、攻撃が直接Originへ届きます。`;
+  } else if (!cdn) {
+    comment += `<br>・CDNが無効ですが、WAFで防御されています。`;
+  } else if (!waf) {
+    comment += `<br>・WAFが無効のため、Originに直接アクセスされた場合はアプリ層攻撃を防げません。`;
+  }
   if (!iplimit) comment += `<br>・IP制限がないため、誰でもOriginにアクセス可能です。`;
 
   diagnosis.innerHTML = comment;
