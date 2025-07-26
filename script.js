@@ -117,3 +117,13 @@ function evaluateConfig() {
 
   diagnosis.innerHTML = comment;
 }
+
+// パターン一覧表のトグル機能
+document.getElementById('patternToggle').addEventListener('change', function() {
+  const tableSection = document.getElementById('patternTableSection');
+  if (this.checked) {
+    tableSection.classList.add('show');
+  } else {
+    tableSection.classList.remove('show');
+  }
+});
