@@ -132,6 +132,26 @@ document.getElementById('patternToggle').addEventListener('change', function() {
   }
 });
 
+// ヘルプモーダル機能
+const helpToggle = document.getElementById('helpToggle');
+const helpModal = document.getElementById('helpModal');
+const closeBtn = helpModal.querySelector('.close');
+
+helpToggle.addEventListener('click', function() {
+  helpModal.style.display = 'block';
+});
+
+closeBtn.addEventListener('click', function() {
+  helpModal.style.display = 'none';
+});
+
+// モーダルの外側をクリックしたら閉じる
+window.addEventListener('click', function(event) {
+  if (event.target === helpModal) {
+    helpModal.style.display = 'none';
+  }
+});
+
 // ダークモード切り替え機能
 const darkModeToggle = document.getElementById('darkModeToggle');
 const body = document.body;
