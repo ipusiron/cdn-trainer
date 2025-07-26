@@ -542,6 +542,7 @@ body.dark-mode .modal-body dd {
   max-width: 90vw;
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transition: opacity 0.3s, visibility 0.3s;
+  pointer-events: none; /* ツールチップがクリックをブロックしないように */
 }
 
 .tooltip::after {
@@ -558,6 +559,21 @@ body.dark-mode .modal-body dd {
 .tooltip-container:hover .tooltip {
   visibility: visible;
   opacity: 1;
+}
+
+/* チェックボックスのラベルのツールチップ調整 */
+label.tooltip-container .tooltip {
+  bottom: auto;
+  top: -10px;
+  left: 200px;
+  transform: none;
+}
+
+label.tooltip-container .tooltip::after {
+  top: 50%;
+  margin-top: -5px;
+  left: -5px;
+  border-color: transparent #333 transparent transparent;
 }
 
 /* ダークモード用ツールチップ */
