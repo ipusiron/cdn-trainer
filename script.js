@@ -7,32 +7,36 @@ function evaluateConfig() {
   const diagnosis = document.getElementById("diagnosis");
 
   // SVG構成図の構築
+  const isDarkMode = document.body.classList.contains('dark-mode');
+  const lineColor = isDarkMode ? '#ccc' : 'black';
+  const textColor = isDarkMode ? '#e0e0e0' : 'black';
+  
   let svg = `<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-    <text x="20" y="50">👤 Client</text>`;
+    <text x="20" y="50" fill="${textColor}">👤 Client</text>`;
 
   let x = 80;
   let components = [];
   
   if (cdn) {
-    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
-    svg += `<text x="${x + 70}" y="50">☁️ CDN</text>`;
+    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
+    svg += `<text x="${x + 70}" y="50" fill="${textColor}">☁️ CDN</text>`;
     components.push({type: 'cdn', x: x + 70});
     x += 130;
   }
   if (waf) {
-    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
-    svg += `<text x="${x + 70}" y="50">🧱 WAF</text>`;
+    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
+    svg += `<text x="${x + 70}" y="50" fill="${textColor}">🧱 WAF</text>`;
     components.push({type: 'waf', x: x + 70});
     x += 130;
   }
-  svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="black" />`;
-  svg += `<text x="${x + 70}" y="50">🖥 Origin</text>`;
+  svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
+  svg += `<text x="${x + 70}" y="50" fill="${textColor}">🖥 Origin</text>`;
   let originX = x + 70;
   
   // IP制限の視覚的表現
   if (iplimit) {
-    svg += `<rect x="${originX - 10}" y="30" width="80" height="40" stroke="red" stroke-width="2" fill="none" stroke-dasharray="5,5" />`;
-    svg += `<text x="${originX}" y="85" font-size="12" fill="red">IP制限</text>`;
+    svg += `<rect x="${originX - 10}" y="30" width="80" height="40" stroke="#ff6b6b" stroke-width="2" fill="none" stroke-dasharray="5,5" />`;
+    svg += `<text x="${originX}" y="85" font-size="12" fill="#ff6b6b">IP制限</text>`;
   }
 
   // 💥攻撃アニメーションの初期位置
@@ -67,7 +71,7 @@ function evaluateConfig() {
       const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
       label.setAttribute("x", currentX);
       label.setAttribute("y", 120);
-      label.setAttribute("fill", "black");
+      label.setAttribute("fill", textColor);
       label.setAttribute("font-size", "14");
       label.setAttribute("dominant-baseline", "text-before-edge");
       label.setAttribute("text-anchor", "middle");
@@ -125,5 +129,28 @@ document.getElementById('patternToggle').addEventListener('change', function() {
     tableSection.classList.add('show');
   } else {
     tableSection.classList.remove('show');
+  }
+});
+
+// ダークモード切り替え機能
+const darkModeToggle = document.getElementById('darkModeToggle');
+const body = document.body;
+
+// 保存されたダークモード設定を読み込む
+const isDarkMode = localStorage.getItem('darkMode') === 'true';
+if (isDarkMode) {
+  body.classList.add('dark-mode');
+}
+
+darkModeToggle.addEventListener('click', function() {
+  body.classList.toggle('dark-mode');
+  const isDark = body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDark);
+  
+  // ダークモード切り替え時に構成図を再描画
+  const checkboxes = document.querySelectorAll('#configForm input[type="checkbox"]');
+  const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+  if (hasChecked || true) { // 常に再描画
+    evaluateConfig();
   }
 });

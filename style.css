@@ -4,6 +4,7 @@ body {
   padding: 0;
   background: #f4f7f9;
   color: #333;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 header {
@@ -11,6 +12,19 @@ header {
   color: white;
   padding: 1em;
   text-align: center;
+}
+
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header-content h1 {
+  margin: 0;
 }
 
 .subtitle {
@@ -217,4 +231,136 @@ button {
   .toggle-label {
     font-size: 0.9em;
   }
+}
+
+/* ダークモード切り替えボタン */
+.dark-mode-toggle {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2em;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  .dark-mode-toggle {
+    right: 20px;
+  }
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1);
+}
+
+.dark-mode-toggle .dark-icon {
+  display: none;
+}
+
+/* ダークモード */
+body.dark-mode {
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+body.dark-mode header {
+  background-color: #1565c0;
+}
+
+body.dark-mode .dark-mode-toggle .light-icon {
+  display: none;
+}
+
+body.dark-mode .dark-mode-toggle .dark-icon {
+  display: inline;
+}
+
+body.dark-mode .custom-config h2,
+body.dark-mode .diagram-section h2,
+body.dark-mode .diagnosis-section h2,
+body.dark-mode .pattern-table-content h2 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .diagram-box,
+body.dark-mode .diagnosis-box {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .diagnosis-box {
+  background-color: #3a2a1a;
+  border-left-color: #ff9800;
+}
+
+body.dark-mode button {
+  background-color: #4a7ba7;
+  color: white;
+}
+
+body.dark-mode button:hover {
+  background-color: #5a8bb7;
+}
+
+body.dark-mode .toggle-label {
+  color: #ccc;
+}
+
+body.dark-mode .slider {
+  background-color: #555;
+}
+
+body.dark-mode .toggle-switch input:checked + .slider {
+  background-color: #4a7ba7;
+}
+
+body.dark-mode .pattern-table {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .pattern-table th {
+  background-color: #1565c0;
+}
+
+body.dark-mode .pattern-table td {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .pattern-table tbody tr:hover {
+  background-color: #3a3a3a;
+}
+
+body.dark-mode .level-best {
+  background-color: #1b5e20;
+}
+
+body.dark-mode .level-high {
+  background-color: #5d4037;
+}
+
+body.dark-mode .level-low {
+  background-color: #4e342e;
+}
+
+body.dark-mode .level-worst {
+  background-color: #5d1f1f;
+}
+
+body.dark-mode .footer {
+  color: #999;
+}
+
+body.dark-mode .footer a {
+  color: #64b5f6;
 }
