@@ -30,28 +30,64 @@
     <section class="custom-config">
       <h2>🛠 カスタム構成モード</h2>
       <form id="configForm">
-        <label><input type="checkbox" id="cdn" checked /> CDN を有効にする</label><br />
-        <label><input type="checkbox" id="waf" checked /> WAF を有効にする</label><br />
-        <label><input type="checkbox" id="iplimit" checked /> Origin にIP制限をかける</label><br />
-        <button type="button" onclick="evaluateConfig()">構成を診断する</button>
+        <label class="tooltip-container">
+          <input type="checkbox" id="cdn" checked /> CDN を有効にする
+          <span class="tooltip">
+            <strong>CDN (Content Delivery Network)</strong><br>
+            世界中のサーバーからコンテンツを配信。DDoS攻撃の緩和やパフォーマンス向上に効果的で、攻撃の第一防御線として機能します。
+          </span>
+        </label><br />
+        <label class="tooltip-container">
+          <input type="checkbox" id="waf" checked /> WAF を有効にする
+          <span class="tooltip">
+            <strong>WAF (Web Application Firewall)</strong><br>
+            SQLインジェクション、XSSなどのアプリケーション層攻撃を検知・防御。シグネチャベースで悪意のあるリクエストをブロックします。
+          </span>
+        </label><br />
+        <label class="tooltip-container">
+          <input type="checkbox" id="iplimit" checked /> Origin にIP制限をかける
+          <span class="tooltip">
+            <strong>IP制限 (IP Restriction)</strong><br>
+            特定のIPアドレス（CDN経由など）のみにアクセスを許可。CDNバイパス攻撃を防ぐ最後の防御線で、オリジンサーバーを直接攻撃から守ります。
+          </span>
+        </label><br />
+        <button type="button" onclick="evaluateConfig()" class="tooltip-container">
+          構成を診断する
+          <span class="tooltip">
+            選択した構成でセキュリティ評価を実行し、攻撃フローをアニメーションで表示します。
+          </span>
+        </button>
       </form>
     </section>
 
     <section class="diagram-section">
-      <h2>構成図</h2>
+      <h2 class="tooltip-container">
+        構成図
+        <span class="tooltip">
+          ネットワーク構成と攻撃フローをSVGアニメーションで表示。紅色の攻撃アイコンがどこでブロックされるか、または通過するかを視覚的に確認できます。
+        </span>
+      </h2>
       <div id="diagram" class="diagram-box"></div>
     </section>
 
     <section class="diagnosis-section">
-      <h2>診断コメント</h2>
+      <h2 class="tooltip-container">
+        診断コメント
+        <span class="tooltip">
+          選択した構成のセキュリティレベル、リスク、改善提案を表示します。各防御策の有効性と問題点を説明します。
+        </span>
+      </h2>
       <div id="diagnosis" class="diagnosis-box"></div>
     </section>
 
     <section class="pattern-toggle-section">
-      <label class="toggle-switch">
+      <label class="toggle-switch tooltip-container">
         <input type="checkbox" id="patternToggle">
         <span class="slider"></span>
         <span class="toggle-label">8パターンの評価一覧を表示</span>
+        <span class="tooltip">
+          CDN/WAF/IP制限のすべての組み合わせ（8パターン）のセキュリティ評価を一覧表で表示します。各パターンのスコアやブロック位置を比較できます。
+        </span>
       </label>
     </section>
 
