@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CDN Trainer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>CDN Trainer</h1>
+    <p class="subtitle">セキュリティ構成を選んで、診断してみよう</p>
+  </header>
+
+  <main>
+    <section class="config-selector">
+      <h2>構成パターンを選択してください</h2>
+      <div class="button-group">
+        <button onclick="selectPreset(0)">✅ 安全な構成</button>
+        <button onclick="selectPreset(1)">△ やや不安な構成</button>
+        <button onclick="selectPreset(2)">❌ 危険な構成</button>
+      </div>
+    </section>
+
+    <section class="diagram-section">
+      <h2>構成図</h2>
+      <div id="diagram" class="diagram-box">
+        <!-- 構成図がここに描画される -->
+      </div>
+    </section>
+
+    <section class="diagnosis-section">
+      <h2>診断コメント</h2>
+      <div id="diagnosis" class="diagnosis-box">
+        <!-- 評価コメントがここに表示される -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 CDN Trainer</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

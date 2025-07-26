@@ -1,0 +1,88 @@
+/* ベース全体の設定 */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f7f9;
+  color: #333;
+}
+
+header {
+  background-color: #2196f3;
+  color: white;
+  padding: 1em;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 0.95em;
+  margin-top: 0.3em;
+}
+
+main {
+  padding: 1.5em;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* ボタン群 */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-top: 1em;
+}
+
+.button-group button {
+  padding: 0.8em;
+  font-size: 1em;
+  background-color: #e3f2fd;
+  border: 2px solid #90caf9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button-group button:hover {
+  background-color: #bbdefb;
+}
+
+/* 構成図エリア */
+.diagram-box {
+  background-color: #ffffff;
+  border: 2px solid #cfd8dc;
+  padding: 1em;
+  border-radius: 8px;
+  margin-top: 0.5em;
+  min-height: 200px;
+  font-family: monospace;
+  white-space: pre-line;
+}
+
+/* 診断コメントエリア */
+.diagnosis-box {
+  background-color: #fff3e0;
+  border-left: 5px solid #ff9800;
+  padding: 1em;
+  border-radius: 6px;
+  margin-top: 0.5em;
+  line-height: 1.5;
+}
+
+/* セクション見出し */
+section h2 {
+  margin-top: 2em;
+  font-size: 1.3em;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 0.3em;
+}
+
+/* フッター */
+footer {
+  text-align: center;
+  color: #888;
+  font-size: 0.85em;
+  padding: 1em 0;
+  margin-top: 2em;
+  border-top: 1px solid #ddd;
+}
