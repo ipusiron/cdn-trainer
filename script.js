@@ -167,10 +167,9 @@ darkModeToggle.addEventListener('click', function() {
   const isDark = body.classList.contains('dark-mode');
   localStorage.setItem('darkMode', isDark);
   
-  // ダークモード切り替え時に構成図を再描画
-  const checkboxes = document.querySelectorAll('#configForm input[type="checkbox"]');
-  const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
-  if (hasChecked || true) { // 常に再描画
+  // ダークモード切り替え時に構成図を再描画（すでに表示されている場合のみ）
+  const diagram = document.getElementById('diagram');
+  if (diagram.innerHTML.trim() !== '') {
     evaluateConfig();
   }
 });
