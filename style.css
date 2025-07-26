@@ -120,10 +120,14 @@ button {
 /* トグルスイッチ */
 .pattern-toggle-section {
   margin-top: 2em;
+  background-color: #f0f4f8;
+  padding: 1.5em;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
 }
 
 .toggle-switch {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   cursor: pointer;
   user-select: none;
@@ -141,6 +145,7 @@ button {
   position: relative;
   transition: background-color 0.3s;
   margin-right: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .slider::before {
@@ -165,7 +170,8 @@ button {
 
 .toggle-label {
   font-size: 0.95em;
-  color: #555;
+  color: #333;
+  font-weight: 500;
 }
 
 /* パターン一覧表 */
@@ -339,12 +345,18 @@ body.dark-mode button:hover {
   background-color: #5a8bb7;
 }
 
+body.dark-mode .pattern-toggle-section {
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
 body.dark-mode .toggle-label {
-  color: #ccc;
+  color: #e0e0e0;
 }
 
 body.dark-mode .slider {
   background-color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 body.dark-mode .toggle-switch input:checked + .slider {
@@ -562,14 +574,14 @@ body.dark-mode .modal-body dd {
 }
 
 /* チェックボックスのラベルのツールチップ調整 */
-label.tooltip-container .tooltip {
+form label.tooltip-container .tooltip {
   bottom: auto;
   top: -10px;
   left: 200px;
   transform: none;
 }
 
-label.tooltip-container .tooltip::after {
+form label.tooltip-container .tooltip::after {
   top: 50%;
   margin-top: -5px;
   left: -5px;
@@ -636,4 +648,9 @@ h2.tooltip-container .tooltip {
 
 body.dark-mode .toggle-switch.tooltip-container .tooltip::after {
   border-color: transparent transparent #555 transparent;
+}
+
+/* フォーム内のチェックボックスのダークモード調整 */
+body.dark-mode form label.tooltip-container .tooltip::after {
+  border-color: transparent #555 transparent transparent;
 }

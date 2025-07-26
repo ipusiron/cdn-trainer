@@ -81,14 +81,16 @@
     </section>
 
     <section class="pattern-toggle-section">
-      <label class="toggle-switch tooltip-container">
-        <input type="checkbox" id="patternToggle">
-        <span class="slider"></span>
-        <span class="toggle-label">8パターンの評価一覧を表示</span>
+      <div class="toggle-switch tooltip-container">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="patternToggle">
+          <span class="slider"></span>
+          <span class="toggle-label">8パターンの評価一覧を表示</span>
+        </label>
         <span class="tooltip">
           CDN/WAF/IP制限のすべての組み合わせ（8パターン）のセキュリティ評価を一覧表で表示します。各パターンのスコアやブロック位置を比較できます。
         </span>
-      </label>
+      </div>
     </section>
 
     <section class="pattern-table-section" id="patternTableSection">
