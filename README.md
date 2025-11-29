@@ -1,3 +1,38 @@
+<!--
+---
+id: day026
+slug: cdn-trainer
+
+title: "CDN Trainer"
+
+subtitle_ja: "セキュアなCDN構成を学べる体験型ツール"
+subtitle_en: "Interactive tool for learning secure CDN configurations"
+
+description_ja: "CDN・WAF・オリジンサーバ構成の良し悪しを、構成を自分で選びながら体験的に学べるセキュリティ教育用Webツール。攻撃の流れとブロック状況をSVGアニメーションで視覚化。"
+description_en: "A security education web tool for learning CDN, WAF, and origin server configurations through hands-on experience. Visualizes attack flow and blocking with SVG animations."
+
+category_ja:
+  - ネットワーク
+category_en:
+  - Network
+
+difficulty: 2
+
+tags:
+  - CDN
+  - WAF
+  - DDoS
+  - IP制限
+  - 多層防御
+  - セキュリティ可視化
+
+repo_url: "https://github.com/ipusiron/cdn-trainer"
+demo_url: "https://ipusiron.github.io/cdn-trainer/"
+
+hub: true
+---
+-->
+
 # CDN Trainer - セキュアなCDN構成を学べる体験型ツール
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/cdn-trainer?style=social)
