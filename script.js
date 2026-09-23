@@ -1,126 +1,153 @@
-function evaluateConfig() {
-  const cdn = document.getElementById("cdn").checked;
-  const waf = document.getElementById("waf").checked;
-  const iplimit = document.getElementById("iplimit").checked;
+// The model is the single source of results; UI code only renders its output.
+const t = CdnMessages.t;
+let animationFrame = null;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const diagram = document.getElementById("diagram");
-  const diagnosis = document.getElementById("diagnosis");
-
-  // SVG構成図の構築
-  const isDarkMode = document.body.classList.contains('dark-mode');
-  const lineColor = isDarkMode ? '#ccc' : 'black';
-  const textColor = isDarkMode ? '#e0e0e0' : 'black';
-  
-  let svg = `<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-    <text x="20" y="50" fill="${textColor}">👤 Client</text>`;
-
-  let x = 80;
-  let components = [];
-  
-  if (cdn) {
-    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
-    svg += `<text x="${x + 70}" y="50" fill="${textColor}">☁️ CDN</text>`;
-    components.push({type: 'cdn', x: x + 70});
-    x += 130;
-  }
-  if (waf) {
-    svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
-    svg += `<text x="${x + 70}" y="50" fill="${textColor}">🧱 WAF</text>`;
-    components.push({type: 'waf', x: x + 70});
-    x += 130;
-  }
-  svg += `<line x1="${x}" y1="45" x2="${x + 60}" y2="45" stroke="${lineColor}" stroke-width="2" />`;
-  svg += `<text x="${x + 70}" y="50" fill="${textColor}">🖥 Origin</text>`;
-  let originX = x + 70;
-  
-  // IP制限の視覚的表現
-  if (iplimit) {
-    svg += `<rect x="${originX - 10}" y="30" width="80" height="40" stroke="#ff6b6b" stroke-width="2" fill="none" stroke-dasharray="5,5" />`;
-    svg += `<text x="${originX}" y="85" font-size="12" fill="#ff6b6b">IP制限</text>`;
-  }
-
-  // 💥攻撃アニメーションの初期位置
-  svg += `<text id="attack-fire" x="20" y="90" fill="red">💥</text></svg>`;
-
-  diagram.innerHTML = svg;
-
-  // SVG内アニメーション処理
-  const fire = document.getElementById("attack-fire");
-  let currentX = 20;
-  let stopX = originX;
-
-  // 防御構成によって停止位置を調整
-  if (components.length > 0) {
-    // 最初の防御コンポーネントで止める
-    stopX = components[0].x - 10;
-  } else if (!iplimit) {
-    // 防御なし＆IP制限なしなら完全通過
-    stopX = originX + 100;
-  }
-
-  function animateFire() {
-    if (!fire) return;
-    currentX += 4;
-    fire.setAttribute("x", currentX);
-    if (currentX < stopX) {
-      requestAnimationFrame(animateFire);
-    } else {
-      fire.textContent = "🛡";
-
-      // ブロック位置のラベル表示を追加
-      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      label.setAttribute("x", currentX);
-      label.setAttribute("y", 120);
-      label.setAttribute("fill", textColor);
-      label.setAttribute("font-size", "14");
-      label.setAttribute("dominant-baseline", "text-before-edge");
-      label.setAttribute("text-anchor", "middle");
-      if (components.length > 0) {
-        const blockedBy = components[0].type;
-        label.textContent = blockedBy === 'cdn' ? "CDNでブロック" : "WAFでブロック";
-      } else if (iplimit) {
-        label.textContent = "IP制限でブロック";
-        // IP制限のみの場合は盾アイコンを下にずらす
-        fire.setAttribute("y", "110");
-      }
-      fire.parentNode.appendChild(label); // ブロック演出に切り替え
-    }
-  }
-  animateFire();
-
-  // 評価ロジック
-  let score = 0;
-  if (cdn) score += 1;
-  if (waf) score += 1;
-  if (iplimit) score += 1;
-
-  let comment = `セキュリティ評価：${score}/3（CDN・WAF・IP制限の3項目で判定）<br>`;
-
-  if (score === 3) {
-    comment += `セキュリティレベル：最高<br><br>`;
-    comment += `✅ 安全性の高い構成です。複数の防御レイヤーが有効化されています。<br>`;
-  } else if (score === 2) {
-    comment += `セキュリティレベル：高い<br><br>`;
-    comment += `⚠️ 構成には一部リスクがあります。追加の防御が推奨されます。<br>`;
-  } else if (score === 1) {
-    comment += `セキュリティレベル：低い<br><br>`;
-    comment += `⚠️ 複数の重要な防御が無効になっています。構成の見直しを推奨します。<br>`;
-  } else {
-    comment += `セキュリティレベル：最低<br><br>`;
-    comment += `❌ 危険な構成です。CDN/WAF/IP制限を検討してください。<br>`;
-  }
-
-  if (!cdn && !waf) {
-    comment += `<br>・CDNとWAFが無効のため、攻撃が直接Originへ届きます。`;
-  } else if (!cdn) {
-    comment += `<br>・CDNが無効ですが、WAFで防御されています。`;
-  } else if (!waf) {
-    comment += `<br>・WAFが無効のため、Originに直接アクセスされた場合はアプリ層攻撃を防げません。`;
-  }
-  if (!iplimit) comment += `<br>・IP制限がないため、誰でもOriginにアクセス可能です。`;
-
-  diagnosis.innerHTML = comment;
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
 }
+
+function svgElement(tag, attributes, text) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function readConfig() {
+  return Object.fromEntries(['cdn', 'waf', 'iplimit'].map((key) =>
+    [key, document.getElementById(key).checked]
+  ));
+}
+
+function readScenario() {
+  const id = document.querySelector('input[name="scenario"]:checked').value;
+  return CdnModel.SCENARIOS.find((scenario) => scenario.id === id);
+}
+
+function resultLabel(result, scenario) {
+  return t(result.stoppedAt ? `result.${result.stoppedAt}` : `result.reached.${scenario.kind}`);
+}
+
+function stopAnimation() {
+  if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+  animationFrame = null;
+}
+
+function drawDiagram(config, scenario, result) {
+  const svg = svgElement('svg', {
+    viewBox: '0 0 680 220', role: 'img',
+    'aria-label': t('ui.diagramLabel', { scenario: t(`scenario.${scenario.id}.short`), result: resultLabel(result, scenario) })
+  });
+  svg.append(svgElement('line', { x1: 50, y1: 80, x2: 600, y2: 80, class: 'route' }));
+  const points = CdnModel.pathPoints(config, scenario);
+  if (scenario.direct && config.cdn) {
+    const first = CdnModel.NODES[result.hops[0]];
+    svg.append(svgElement('polyline', {
+      points: `50,80 50,170 ${first[0]},170 ${first[0]},80`, class: 'route route-bypass'
+    }));
+  }
+  svg.append(svgElement('polyline', {
+    id: 'attackPath', points: points.map((point) => point.join(',')).join(' '),
+    class: 'route route-selected'
+  }));
+  for (const [key, [x, y]] of Object.entries(CdnModel.NODES)) {
+    const enabled = key === 'client' || key === 'origin' || config[key === 'ip' ? 'iplimit' : key];
+    const node = svgElement('g', { class: `node${enabled ? '' : ' is-disabled'}`, 'data-node': key });
+    node.append(svgElement('text', { x, y: y - 40, class: 'node-icon', 'text-anchor': 'middle' }, t(`icon.${key}`)));
+    node.append(svgElement('text', { x, y: y + 35, 'text-anchor': 'middle' }, t(`node.${key}`)));
+    if (!enabled) node.append(svgElement('text', { x, y: y + 60, 'text-anchor': 'middle' }, t('node.disabled')));
+    svg.append(node);
+  }
+  const fire = svgElement('text', {
+    id: 'attack-fire', x: points[0][0], y: points[0][1],
+    class: 'attack-icon', 'text-anchor': 'middle', 'dominant-baseline': 'central'
+  }, t('icon.attack'));
+  svg.append(fire);
+  document.getElementById('diagram').replaceChildren(svg);
+  playAttack(svg, fire, points, result, scenario);
+}
+
+function playAttack(svg, fire, points, result, scenario) {
+  const lengths = points.slice(1).map((point, index) =>
+    Math.hypot(point[0] - points[index][0], point[1] - points[index][1])
+  );
+  const total = lengths.reduce((sum, length) => sum + length, 0);
+  const setPoint = (point) => {
+    fire.setAttribute('x', point[0]);
+    fire.setAttribute('y', point[1]);
+  };
+  const finish = () => {
+    animationFrame = null;
+    const end = points[points.length - 1];
+    setPoint(end);
+    fire.textContent = t(result.stoppedAt ? 'icon.blocked' : 'icon.reached');
+    svg.append(svgElement('text', {
+      x: end[0], y: 208, class: result.stoppedAt ? 'label-blocked' : 'label-reached',
+      'text-anchor': end[0] < 100 ? 'start' : end[0] > 580 ? 'end' : 'middle'
+    }, resultLabel(result, scenario)));
+  };
+  if (reducedMotion.matches) {
+    finish();
+    return;
+  }
+  const startedAt = performance.now();
+  function frame(now) {
+    const progress = Math.min((now - startedAt) / 1600, 1);
+    if (progress >= 1) {
+      finish();
+      return;
+    }
+    let distance = total * progress;
+    for (let index = 0; index < lengths.length; index += 1) {
+      if (distance <= lengths[index]) {
+        const fraction = lengths[index] === 0 ? 1 : distance / lengths[index];
+        setPoint(points[index].map((value, axis) =>
+          value + (points[index + 1][axis] - value) * fraction
+        ));
+        break;
+      }
+      distance -= lengths[index];
+    }
+    animationFrame = requestAnimationFrame(frame);
+  }
+  animationFrame = requestAnimationFrame(frame);
+}
+
+// This live summary is expanded with all scenarios and explanations in Stage 3.
+function renderDiagnosis(config, evaluation) {
+  document.getElementById('diagnosis').replaceChildren(
+    element('span', t(`level.${evaluation.level}`), `level-badge level-${evaluation.level}`),
+    element('p', t('score', { n: evaluation.blocked })),
+    element('p', t(`users.${evaluation.usersReach}`))
+  );
+}
+
+function renderCurrent() {
+  stopAnimation();
+  const config = readConfig();
+  const scenario = readScenario();
+  const evaluation = CdnModel.evaluate(config);
+  const result = evaluation.results.find((entry) => entry.id === scenario.id);
+  renderDiagnosis(config, evaluation, scenario);
+  drawDiagram(config, scenario, result);
+}
+
+document.querySelectorAll('[data-message]').forEach((node) => {
+  node.textContent = t(node.dataset.message);
+});
+document.getElementById('diagramAssumptions').replaceChildren(
+  ...[1, 2, 3, 4, 5, 6].map((number) => element('li', t(`assumption.${number}`)))
+);
+document.getElementById('replayButton').addEventListener('click', renderCurrent);
+document.querySelectorAll('#configForm input, input[name="scenario"]').forEach((input) => {
+  input.addEventListener('change', renderCurrent);
+});
+reducedMotion.addEventListener('change', renderCurrent);
+window.addEventListener('pagehide', stopAnimation);
 
 // パターン一覧表のトグル機能
 document.getElementById('patternToggle').addEventListener('change', function() {
@@ -167,9 +194,7 @@ darkModeToggle.addEventListener('click', function() {
   const isDark = body.classList.contains('dark-mode');
   localStorage.setItem('darkMode', isDark);
   
-  // ダークモード切り替え時に構成図を再描画（すでに表示されている場合のみ）
-  const diagram = document.getElementById('diagram');
-  if (diagram.innerHTML.trim() !== '') {
-    evaluateConfig();
-  }
+  // The existing SVG inherits theme colors; do not restart its animation.
 });
+
+renderCurrent();

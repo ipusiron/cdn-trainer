@@ -51,16 +51,35 @@
             特定のIPアドレス（CDN経由など）のみにアクセスを許可。CDNバイパス攻撃を防ぐ最後の防御線で、オリジンサーバーを直接攻撃から守ります。
           </span>
         </label><br />
-        <button type="button" onclick="evaluateConfig()" class="tooltip-container">
-          構成を診断する
+        <button type="button" id="replayButton" class="tooltip-container">
+          <span data-message="ui.replay">攻撃を再生</span>
           <span class="tooltip">
-            選択した構成でセキュリティ評価を実行し、攻撃フローをアニメーションで表示します。
+            同じ構成とシナリオで、攻撃のアニメーションをもう一度流します。
           </span>
         </button>
       </form>
     </section>
 
     <section class="diagram-section">
+      <fieldset class="scenario-options">
+        <legend data-message="ui.scenario">攻撃のシナリオ</legend>
+        <label for="scenarioAppDomain">
+          <input id="scenarioAppDomain" type="radio" name="scenario" value="app-domain" checked />
+          <span data-message="scenario.app-domain.long">アプリ層攻撃（SQLインジェクションなど）をドメイン経由で送る</span>
+        </label>
+        <label for="scenarioFloodDomain">
+          <input id="scenarioFloodDomain" type="radio" name="scenario" value="flood-domain" />
+          <span data-message="scenario.flood-domain.long">大量のリクエスト（DDoS）をドメイン経由で送る</span>
+        </label>
+        <label for="scenarioAppDirect">
+          <input id="scenarioAppDirect" type="radio" name="scenario" value="app-direct" />
+          <span data-message="scenario.app-direct.long">オリジンのIPアドレスを突き止め、CDNを通さずにアプリ層攻撃を送る</span>
+        </label>
+        <label for="scenarioFloodDirect">
+          <input id="scenarioFloodDirect" type="radio" name="scenario" value="flood-direct" />
+          <span data-message="scenario.flood-direct.long">オリジンのIPアドレスへ、CDNを通さずに大量のリクエストを送る</span>
+        </label>
+      </fieldset>
       <h2 class="tooltip-container">
         構成図
         <span class="tooltip">
@@ -68,6 +87,10 @@
         </span>
       </h2>
       <div id="diagram" class="diagram-box"></div>
+      <details class="assumptions">
+        <summary data-message="ui.assumptions">この図の前提</summary>
+        <ul id="diagramAssumptions"></ul>
+      </details>
     </section>
 
     <section class="diagnosis-section">
@@ -242,6 +265,8 @@
     </div>
   </footer>
 
+  <script src="cdn-messages.js"></script>
+  <script src="cdn-model.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
