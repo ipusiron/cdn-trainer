@@ -31,11 +31,14 @@ test('unknown keys throw; score and multi-parameter substitutions work', () => {
   assert.equal(messages.t('ui.diagramLabel', { scenario: 'A', result: 'B' }), 'A：B');
 });
 
-test('model has no Japanese literals outside comments', () => {
+test('model and UI have no Japanese literals outside comments', () => {
   const ranges = [[0x3040, 0x30ff], [0x4e00, 0x9fff], [0xff01, 0xff60]];
   const pattern = new RegExp(`[${ranges.map(([start, end]) => `${String.fromCodePoint(start)}-${String.fromCodePoint(end)}`).join('')}]`, 'u');
-  const source = fs.readFileSync(path.join(__dirname, '../cdn-model.js'), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
-  assert.doesNotMatch(source, pattern);
+  for (const file of ['cdn-model.js', 'script.js']) {
+    const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
+    assert.doesNotMatch(source, pattern, file);
+    assert.doesNotMatch(source, /[\u{1f000}-\u{1ffff}\u2600-\u27bf]/u, file);
+  }
 });
 
 test('dictionary also runs as a DOM-free classic script', () => {

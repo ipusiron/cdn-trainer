@@ -218,18 +218,57 @@ const helpToggle = document.getElementById('helpToggle');
 const helpModal = document.getElementById('helpModal');
 const closeBtn = helpModal.querySelector('.close');
 
+function fillList(id, keys) {
+  document.getElementById(id).replaceChildren(...keys.map((key) => element('li', t(key))));
+}
+
+fillList('helpUsage', [1, 2, 3].map((n) => `help.usage.${n}`));
+fillList('helpScenarios', CdnModel.SCENARIOS.map((scenario) => `scenario.${scenario.id}.long`));
+fillList('helpAssumptions', [1, 2, 3, 4, 5, 6].map((n) => `assumption.${n}`));
+fillList('helpLevels', ['misconfig', 'best', 'high', 'low', 'worst'].map((level) => `help.level.${level}`));
+fillList('helpLearning', [1, 2, 3].map((n) => `help.learning.${n}`));
+helpToggle.setAttribute('aria-label', t('ui.helpOpen'));
+helpToggle.title = t('ui.helpOpen');
+closeBtn.setAttribute('aria-label', t('ui.helpClose'));
+document.querySelector('.table-scroll').setAttribute('aria-label', t('ui.tableRegion'));
+
+function closeHelp() {
+  helpModal.hidden = true;
+  document.querySelectorAll('header, main, footer').forEach((node) => { node.inert = false; });
+  helpToggle.focus();
+}
+
 helpToggle.addEventListener('click', function() {
-  helpModal.style.display = 'block';
+  helpModal.hidden = false;
+  document.querySelectorAll('header, main, footer').forEach((node) => { node.inert = true; });
+  closeBtn.focus();
 });
 
-closeBtn.addEventListener('click', function() {
-  helpModal.style.display = 'none';
-});
+closeBtn.addEventListener('click', closeHelp);
 
 // モーダルの外側をクリックしたら閉じる
 window.addEventListener('click', function(event) {
   if (event.target === helpModal) {
-    helpModal.style.display = 'none';
+    closeHelp();
+  }
+});
+
+helpModal.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeHelp();
+  } else if (event.key === 'Tab') {
+    const focusable = [...helpModal.querySelectorAll('button, a[href], input, [tabindex="0"]')]
+      .filter((node) => !node.disabled && !node.hidden);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 });
 
@@ -238,17 +277,34 @@ const darkModeToggle = document.getElementById('darkModeToggle');
 const body = document.body;
 
 // 保存されたダークモード設定を読み込む
-const isDarkMode = localStorage.getItem('darkMode') === 'true';
-if (isDarkMode) {
-  body.classList.add('dark-mode');
+try {
+  const savedDarkMode = localStorage.getItem('darkMode');
+  if (savedDarkMode === 'true' || savedDarkMode === 'false') {
+    body.classList.toggle('dark-mode', savedDarkMode === 'true');
+  }
+} catch {
+  // Storage is optional: all controls remain usable without persistence.
+}
+
+function updateThemeControl() {
+  const isDark = body.classList.contains('dark-mode');
+  darkModeToggle.setAttribute('aria-pressed', String(isDark));
+  darkModeToggle.setAttribute('aria-label', t(isDark ? 'ui.light' : 'ui.dark'));
+  darkModeToggle.title = t(isDark ? 'ui.light' : 'ui.dark');
 }
 
 darkModeToggle.addEventListener('click', function() {
   body.classList.toggle('dark-mode');
   const isDark = body.classList.contains('dark-mode');
-  localStorage.setItem('darkMode', isDark);
+  try {
+    localStorage.setItem('darkMode', String(isDark));
+  } catch {
+    // Theme changes still work if storage access is denied.
+  }
+  updateThemeControl();
   
   // The existing SVG inherits theme colors; do not restart its animation.
 });
 
+updateThemeControl();
 renderCurrent();
