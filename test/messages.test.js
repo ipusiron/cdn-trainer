@@ -31,6 +31,19 @@ test('unknown keys throw; score and multi-parameter substitutions work', () => {
   assert.equal(messages.t('ui.diagramLabel', { scenario: 'A', result: 'B' }), 'A：B');
 });
 
+test('shield, desktop and cloud icons explicitly select emoji presentation', () => {
+  const needsEmoji = new Set([0x1f6e1, 0x1f5a5, 0x2601]);
+  for (const key of messages.keys.filter((name) => name.startsWith('icon.'))) {
+    const points = Array.from(messages.t(key), (character) => character.codePointAt(0));
+    points.forEach((point, index) => {
+      if (needsEmoji.has(point)) assert.equal(points[index + 1], 0xfe0f, key);
+    });
+  }
+  for (const [key, point] of [['blocked', 0x1f6e1], ['origin', 0x1f5a5], ['cdn', 0x2601]]) {
+    assert.equal(messages.t(`icon.${key}`), String.fromCodePoint(point, 0xfe0f));
+  }
+});
+
 test('model and UI have no Japanese literals outside comments', () => {
   const ranges = [[0x3040, 0x30ff], [0x4e00, 0x9fff], [0xff01, 0xff60]];
   const pattern = new RegExp(`[${ranges.map(([start, end]) => `${String.fromCodePoint(start)}-${String.fromCodePoint(end)}`).join('')}]`, 'u');

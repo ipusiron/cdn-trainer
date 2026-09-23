@@ -194,8 +194,16 @@ button {
   fill: var(--disabled);
 }
 
+.node-name {
+  paint-order: stroke;
+  stroke: var(--panel-bg);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+
 .node-icon,
 .attack-icon {
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", system-ui, sans-serif;
   font-size: 26px;
 }
 
@@ -374,6 +382,11 @@ body.dark-mode .label-reached {
   padding: 10px;
   text-align: center;
   border-bottom: 1px solid var(--border);
+}
+
+.pattern-table th:nth-last-child(-n + 3),
+.pattern-table td:nth-last-child(-n + 3) {
+  white-space: nowrap;
 }
 
 .level-best {
@@ -761,10 +774,17 @@ body.dark-mode .modal-body dd {
   border-color: var(--tooltip-bg) transparent transparent transparent;
 }
 
-.tooltip-container:hover .tooltip,
-.tooltip-container:focus-within .tooltip {
+.tooltip-container:focus-visible .tooltip,
+.tooltip-container:has(input:focus-visible) .tooltip {
   visibility: visible;
   opacity: 1;
+}
+
+@media (hover: hover) {
+  .tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 /* チェックボックスのラベルのツールチップ調整 */
@@ -817,12 +837,6 @@ button.tooltip-container .tooltip {
     left: 20px;
     margin-top: 0;
     border-color: transparent transparent var(--tooltip-bg) transparent;
-  }
-  
-  .tooltip-container:active .tooltip {
-    visibility: visible;
-    opacity: 1;
-    display: block;
   }
 }
 

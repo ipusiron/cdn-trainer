@@ -58,8 +58,8 @@ function drawDiagram(config, scenario, result) {
     const enabled = key === 'client' || key === 'origin' || config[key === 'ip' ? 'iplimit' : key];
     const node = svgElement('g', { class: `node${enabled ? '' : ' is-disabled'}`, 'data-node': key });
     node.append(svgElement('text', { x, y: y - 40, class: 'node-icon', 'text-anchor': 'middle' }, t(`icon.${key}`)));
-    node.append(svgElement('text', { x, y: y + 35, 'text-anchor': 'middle' }, t(`node.${key}`)));
-    if (!enabled) node.append(svgElement('text', { x, y: y + 60, 'text-anchor': 'middle' }, t('node.disabled')));
+    node.append(svgElement('text', { x, y: y + 35, class: 'node-name', 'text-anchor': 'middle' }, t(`node.${key}`)));
+    if (!enabled) node.append(svgElement('text', { x, y: y + 60, class: 'node-name', 'text-anchor': 'middle' }, t('node.disabled')));
     svg.append(node);
   }
   const fire = svgElement('text', {
@@ -68,7 +68,23 @@ function drawDiagram(config, scenario, result) {
   }, t('icon.attack'));
   svg.append(fire);
   document.getElementById('diagram').replaceChildren(svg);
+  revealEndpoint(svg, result);
   playAttack(svg, fire, points, result, scenario);
+}
+
+function revealEndpoint(svg, result) {
+  const box = svg.parentElement;
+  if (box.scrollWidth <= box.clientWidth) return;
+  const endpoint = svg.querySelector(`[data-node="${result.stoppedAt || 'origin'}"]`);
+  const label = svg.querySelector('.label-blocked, .label-reached');
+  const bounds = [endpoint, label].filter(Boolean).map((node) => node.getBoundingClientRect());
+  const left = Math.min(...bounds.map((rect) => rect.left));
+  const right = Math.max(...bounds.map((rect) => rect.right));
+  const visibleLeft = box.getBoundingClientRect().left + box.clientLeft;
+  const visibleRight = visibleLeft + box.clientWidth;
+  // Move this box only: scrollIntoView would also move the page.
+  if (left < visibleLeft + 12) box.scrollLeft += left - visibleLeft - 12;
+  else if (right > visibleRight - 12) box.scrollLeft += right - visibleRight + 12;
 }
 
 function playAttack(svg, fire, points, result, scenario) {
@@ -89,6 +105,7 @@ function playAttack(svg, fire, points, result, scenario) {
       x: end[0], y: 208, class: result.stoppedAt ? 'label-blocked' : 'label-reached',
       'text-anchor': end[0] < 100 ? 'start' : end[0] > 580 ? 'end' : 'middle'
     }, resultLabel(result, scenario)));
+    revealEndpoint(svg, result);
   };
   if (reducedMotion.matches) {
     finish();
