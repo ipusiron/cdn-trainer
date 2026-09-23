@@ -117,13 +117,67 @@ function playAttack(svg, fire, points, result, scenario) {
   animationFrame = requestAnimationFrame(frame);
 }
 
-// This live summary is expanded with all scenarios and explanations in Stage 3.
-function renderDiagnosis(config, evaluation) {
+function renderDiagnosis(config, evaluation, selectedScenario) {
+  const scenarios = element('ul', undefined, 'scenario-results');
+  for (const result of evaluation.results) {
+    const scenario = CdnModel.SCENARIOS.find((entry) => entry.id === result.id);
+    const row = element('li');
+    row.dataset.scenario = scenario.id;
+    if (scenario.id === selectedScenario.id) row.classList.add('is-current');
+    row.append(element('span', t(`scenario.${scenario.id}.short`)), element('strong', resultLabel(result, scenario)));
+    scenarios.append(row);
+  }
+  const explanations = element('div', undefined, 'explanations');
+  const conditions = [
+    !evaluation.usersReach,
+    config.cdn && !config.waf,
+    !config.cdn && evaluation.usersReach,
+    config.cdn && !config.iplimit,
+    evaluation.level === 'best'
+  ];
+  conditions.forEach((matches, index) => {
+    if (matches) {
+      const paragraph = element('p', t(`explanation.${index + 1}`));
+      paragraph.dataset.explanation = index + 1;
+      explanations.append(paragraph);
+    }
+  });
   document.getElementById('diagnosis').replaceChildren(
     element('span', t(`level.${evaluation.level}`), `level-badge level-${evaluation.level}`),
     element('p', t('score', { n: evaluation.blocked })),
-    element('p', t(`users.${evaluation.usersReach}`))
+    element('p', t(`users.${evaluation.usersReach}`)),
+    scenarios,
+    explanations
   );
+}
+
+function renderPatternTable(config) {
+  const head = element('tr');
+  const headers = [
+    t('node.cdn'), t('node.waf'), t('node.ip'),
+    ...CdnModel.SCENARIOS.map((scenario) => t(`scenario.${scenario.id}.short`)),
+    t('ui.tableBlocked'), t('ui.tableUsers'), t('ui.tableLevel')
+  ];
+  headers.forEach((title) => {
+    const cell = element('th', title);
+    cell.scope = 'col';
+    head.append(cell);
+  });
+  document.querySelector('.pattern-table thead').replaceChildren(head);
+  const rows = CdnModel.CONFIGS.map((candidate) => {
+    const evaluation = CdnModel.evaluate(candidate);
+    const row = element('tr', undefined, `level-${evaluation.level}`);
+    const keys = ['cdn', 'waf', 'iplimit'];
+    if (keys.every((key) => candidate[key] === config[key])) row.setAttribute('aria-current', 'true');
+    const cells = [
+      ...keys.map((key) => t(candidate[key] ? 'cell.on' : 'cell.off')),
+      ...evaluation.results.map((result) => t(result.stoppedAt ? `cell.${result.stoppedAt}` : 'cell.reached')),
+      t('cell.score', { n: evaluation.blocked }), t(`cell.users.${evaluation.usersReach}`), t(`level.${evaluation.level}`)
+    ];
+    row.append(...cells.map((value) => element('td', value)));
+    return row;
+  });
+  document.querySelector('.pattern-table tbody').replaceChildren(...rows);
 }
 
 function renderCurrent() {
@@ -133,6 +187,7 @@ function renderCurrent() {
   const evaluation = CdnModel.evaluate(config);
   const result = evaluation.results.find((entry) => entry.id === scenario.id);
   renderDiagnosis(config, evaluation, scenario);
+  renderPatternTable(config);
   drawDiagram(config, scenario, result);
 }
 
@@ -150,13 +205,12 @@ reducedMotion.addEventListener('change', renderCurrent);
 window.addEventListener('pagehide', stopAnimation);
 
 // パターン一覧表のトグル機能
-document.getElementById('patternToggle').addEventListener('change', function() {
+document.getElementById('patternToggle').addEventListener('click', function() {
   const tableSection = document.getElementById('patternTableSection');
-  if (this.checked) {
-    tableSection.classList.add('show');
-  } else {
-    tableSection.classList.remove('show');
-  }
+  const expanded = this.getAttribute('aria-expanded') !== 'true';
+  this.setAttribute('aria-expanded', String(expanded));
+  this.querySelector('.toggle-label').textContent = t(expanded ? 'ui.patternHide' : 'ui.patternShow');
+  tableSection.hidden = !expanded;
 });
 
 // ヘルプモーダル機能

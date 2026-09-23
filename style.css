@@ -68,8 +68,6 @@ button {
   padding: 1em;
   border-radius: 8px;
   margin-top: 1em;
-  font-family: monospace;
-  white-space: pre-line;
   position: relative;
 }
 
@@ -77,6 +75,37 @@ button {
   background-color: #fff3e0;
   border-left: 5px solid #ff9800;
   line-height: 1.5;
+}
+
+.diagnosis-box p {
+  margin: 0.5em 0;
+}
+
+.level-badge {
+  display: inline-block;
+  border: 1px solid currentColor;
+  border-radius: 1em;
+  padding: 0.15em 0.8em;
+  font-weight: bold;
+}
+
+.scenario-results {
+  padding: 0;
+  list-style: none;
+}
+
+.scenario-results li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25em 1em;
+  padding: 0.25em;
+  border: 2px solid transparent;
+}
+
+.scenario-results .is-current {
+  border-color: currentColor;
+  border-radius: 4px;
 }
 
 .footer {
@@ -224,13 +253,13 @@ body.dark-mode .label-reached {
   align-items: center;
   cursor: pointer;
   user-select: none;
-}
-
-.toggle-switch input[type="checkbox"] {
-  display: none;
+  min-height: 44px;
+  margin-top: 0;
+  max-width: 100%;
 }
 
 .slider {
+  flex: 0 0 50px;
   width: 50px;
   height: 26px;
   background-color: #ccc;
@@ -253,11 +282,11 @@ body.dark-mode .label-reached {
   transition: transform 0.3s;
 }
 
-.toggle-switch input:checked + .slider {
+.toggle-switch[aria-expanded="true"] .slider {
   background-color: #2196f3;
 }
 
-.toggle-switch input:checked + .slider::before {
+.toggle-switch[aria-expanded="true"] .slider::before {
   transform: translateX(24px);
 }
 
@@ -269,15 +298,24 @@ body.dark-mode .label-reached {
 
 /* パターン一覧表 */
 .pattern-table-section {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.5s ease-out;
   margin-top: 1em;
 }
 
-.pattern-table-section.show {
-  max-height: 800px;
-  transition: max-height 0.5s ease-in;
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pattern-table [aria-current="true"] td {
+  box-shadow: inset 0 3px currentColor, inset 0 -3px currentColor;
+}
+
+.pattern-table [aria-current="true"] td:first-child {
+  border-left: 3px solid currentColor;
+}
+
+.pattern-table [aria-current="true"] td:last-child {
+  border-right: 3px solid currentColor;
 }
 
 .pattern-table-content {
@@ -294,6 +332,7 @@ body.dark-mode .label-reached {
 }
 
 .pattern-table th {
+  min-width: 4em;
   background-color: #2196f3;
   color: white;
   padding: 12px;
@@ -305,10 +344,6 @@ body.dark-mode .label-reached {
   padding: 10px;
   text-align: center;
   border-bottom: 1px solid #e0e0e0;
-}
-
-.pattern-table tbody tr:hover {
-  background-color: #f5f5f5;
 }
 
 .level-best {
@@ -325,6 +360,10 @@ body.dark-mode .label-reached {
 
 .level-worst {
   background-color: #ffebee;
+}
+
+.level-misconfig {
+  background-color: #ede7f6;
 }
 
 @media (max-width: 600px) {
@@ -452,7 +491,7 @@ body.dark-mode .slider {
   box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
-body.dark-mode .toggle-switch input:checked + .slider {
+body.dark-mode .toggle-switch[aria-expanded="true"] .slider {
   background-color: #4a7ba7;
 }
 
@@ -469,10 +508,6 @@ body.dark-mode .pattern-table td {
   border-bottom-color: #444;
 }
 
-body.dark-mode .pattern-table tbody tr:hover {
-  background-color: #3a3a3a;
-}
-
 body.dark-mode .level-best {
   background-color: #1b5e20;
 }
@@ -487,6 +522,10 @@ body.dark-mode .level-low {
 
 body.dark-mode .level-worst {
   background-color: #5d1f1f;
+}
+
+body.dark-mode .level-misconfig {
+  background-color: #4a3a6a;
 }
 
 body.dark-mode .footer {
@@ -634,8 +673,8 @@ body.dark-mode .modal-body dd {
   position: absolute;
   z-index: 1000;
   bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  transform: none;
   background-color: #333;
   color: white;
   text-align: left;
@@ -643,8 +682,9 @@ body.dark-mode .modal-body dd {
   border-radius: 8px;
   font-size: 13px;
   line-height: 1.5;
-  width: 280px;
-  max-width: 90vw;
+  box-sizing: border-box;
+  width: min(280px, calc(100vw - 48px));
+  max-width: calc(100vw - 32px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transition: opacity 0.3s, visibility 0.3s;
   pointer-events: none; /* ツールチップがクリックをブロックしないように */
@@ -708,8 +748,21 @@ h2.tooltip-container .tooltip {
   .tooltip {
     font-size: 12px;
     padding: 10px 12px;
-    width: 250px;
-    max-width: 85vw;
+    width: min(250px, calc(100vw - 48px));
+    max-width: calc(100vw - 32px);
+  }
+
+  form label.tooltip-container .tooltip {
+    left: 0;
+    top: 100%;
+    bottom: auto;
+  }
+
+  form label.tooltip-container .tooltip::after {
+    top: -5px;
+    left: 20px;
+    margin-top: 0;
+    border-color: transparent transparent #333 transparent;
   }
   
   .tooltip-container:hover .tooltip {
@@ -730,7 +783,7 @@ h2.tooltip-container .tooltip {
   left: 0;
   transform: none;
   margin-top: 10px;
-  width: 300px;
+  width: min(300px, calc(100vw - 112px));
 }
 
 .toggle-switch.tooltip-container .tooltip::after {
