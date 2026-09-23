@@ -278,7 +278,7 @@ body.dark-mode .label-reached {
   border: 1px solid var(--border);
 }
 
-.toggle-switch {
+.toggle-switch.tooltip-container {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
