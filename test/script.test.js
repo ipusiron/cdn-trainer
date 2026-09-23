@@ -68,3 +68,12 @@ test('tooltip focus is keyboard-visible and hover is restricted to hover-capable
   assert.match(css, /\.tooltip-container:has\(input:focus-visible\) \.tooltip/);
   assert.match(css, /@media \(hover: hover\)\s*\{\s*\.tooltip-container:hover \.tooltip/);
 });
+
+test('header centers the desktop title independently of the right-hand buttons', () => {
+  const css = fs.readFileSync(path.join(__dirname, '../style.css'), 'utf8');
+  assert.match(css, /\.header-content\s*\{[^}]*flex-direction:\s*column;/);
+  const desktop = css.slice(css.indexOf('@media (min-width: 601px)'));
+  assert.match(desktop, /\.header-content\s*\{\s*display:\s*grid;\s*grid-template-columns:\s*minmax\(0, 1fr\) auto minmax\(0, 1fr\);/);
+  assert.match(desktop, /\.header-content h1\s*\{\s*grid-column:\s*2;\s*grid-row:\s*1;/);
+  assert.match(desktop, /\.header-buttons\s*\{\s*grid-column:\s*3;\s*grid-row:\s*1;\s*justify-self:\s*end;/);
+});
