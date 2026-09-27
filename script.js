@@ -208,12 +208,32 @@ function renderCurrent() {
   drawDiagram(config, scenario, result);
 }
 
-document.querySelectorAll('[data-message]').forEach((node) => {
-  node.textContent = t(node.dataset.message);
-});
-document.getElementById('diagramAssumptions').replaceChildren(
-  ...[1, 2, 3, 4, 5, 6].map((number) => element('li', t(`assumption.${number}`)))
-);
+// Lists inside the initially hidden help dialog and the collapsed assumptions are generated here
+// rather than marked with data-i18n, so they have to be rebuilt whenever the language changes.
+function renderStaticLists() {
+  fillList('diagramAssumptions', [1, 2, 3, 4, 5, 6].map((n) => `assumption.${n}`));
+  fillList('helpUsage', [1, 2, 3].map((n) => `help.usage.${n}`));
+  fillList('helpScenarios', CdnModel.SCENARIOS.map((scenario) => `scenario.${scenario.id}.long`));
+  fillList('helpAssumptions', [1, 2, 3, 4, 5, 6].map((n) => `assumption.${n}`));
+  fillList('helpLevels', ['misconfig', 'best', 'high', 'low', 'worst'].map((level) => `help.level.${level}`));
+  fillList('helpLearning', [1, 2, 3].map((n) => `help.learning.${n}`));
+}
+
+// This label depends on whether the table is open, so data-i18n would roll the open state back.
+function renderPatternToggle() {
+  const toggle = document.getElementById('patternToggle');
+  const expanded = toggle.getAttribute('aria-expanded') === 'true';
+  toggle.querySelector('.toggle-label').textContent = t(expanded ? 'ui.patternHide' : 'ui.patternShow');
+}
+
+// Everything whose text is generated instead of marked with data-i18n is redrawn from here.
+function renderGenerated() {
+  renderStaticLists();
+  renderPatternToggle();
+  updateThemeControl();
+  renderCurrent();
+}
+
 document.getElementById('replayButton').addEventListener('click', renderCurrent);
 document.querySelectorAll('#configForm input, input[name="scenario"]').forEach((input) => {
   input.addEventListener('change', renderCurrent);
@@ -226,7 +246,7 @@ document.getElementById('patternToggle').addEventListener('click', function() {
   const tableSection = document.getElementById('patternTableSection');
   const expanded = this.getAttribute('aria-expanded') !== 'true';
   this.setAttribute('aria-expanded', String(expanded));
-  this.querySelector('.toggle-label').textContent = t(expanded ? 'ui.patternHide' : 'ui.patternShow');
+  renderPatternToggle();
   tableSection.hidden = !expanded;
 });
 
@@ -238,16 +258,6 @@ const closeBtn = helpModal.querySelector('.close');
 function fillList(id, keys) {
   document.getElementById(id).replaceChildren(...keys.map((key) => element('li', t(key))));
 }
-
-fillList('helpUsage', [1, 2, 3].map((n) => `help.usage.${n}`));
-fillList('helpScenarios', CdnModel.SCENARIOS.map((scenario) => `scenario.${scenario.id}.long`));
-fillList('helpAssumptions', [1, 2, 3, 4, 5, 6].map((n) => `assumption.${n}`));
-fillList('helpLevels', ['misconfig', 'best', 'high', 'low', 'worst'].map((level) => `help.level.${level}`));
-fillList('helpLearning', [1, 2, 3].map((n) => `help.learning.${n}`));
-helpToggle.setAttribute('aria-label', t('ui.helpOpen'));
-helpToggle.title = t('ui.helpOpen');
-closeBtn.setAttribute('aria-label', t('ui.helpClose'));
-document.querySelector('.table-scroll').setAttribute('aria-label', t('ui.tableRegion'));
 
 function closeHelp() {
   helpModal.hidden = true;
@@ -323,5 +333,8 @@ darkModeToggle.addEventListener('click', function() {
   // The existing SVG inherits theme colors; do not restart its animation.
 });
 
-updateThemeControl();
-renderCurrent();
+// 言語切り替え機能
+document.getElementById('langToggle').addEventListener('click', () => CdnI18n.toggle());
+document.addEventListener(CdnI18n.EVENT, renderGenerated);
+// init translates the data-i18n markup and then fires the event that draws everything else.
+CdnI18n.init();

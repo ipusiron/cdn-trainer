@@ -1,7 +1,9 @@
 const CdnMessages = (() => {
   'use strict';
 
-  // Keep all generated UI text here. A second language can be added alongside ja.
+  const LANGUAGES = Object.freeze(['ja', 'en']);
+
+  // Keep all generated UI text here. Every key exists in both dictionaries; i18n.js selects the language.
   const dictionaries = {
     ja: {
       'scenario.app-domain.long': 'アプリ層攻撃（SQLインジェクションなど）をドメイン経由で送る',
@@ -63,6 +65,15 @@ const CdnMessages = (() => {
       'icon.attack': '🔥',
       'icon.blocked': '🛡️',
       'icon.reached': '💥',
+      'app.title': 'CDN Trainer - セキュアなCDN構成を学べる体験型ツール',
+      'app.subtitle.1': '攻撃者から見えるサーバーの姿とは？',
+      'app.subtitle.2': 'CDN・WAF・オリジン構成の違いを体験しながら学べます。',
+      'ui.langButton': 'EN',
+      'ui.langAria': 'English',
+      'ui.customConfig': '🛠 カスタム構成モード',
+      'ui.enableCdn': 'CDNを有効にする',
+      'ui.enableWaf': 'WAFを有効にする',
+      'ui.enableIplimit': 'OriginにIP制限をかける',
       'ui.replay': '攻撃を再生',
       'ui.replayTip': '同じ構成とシナリオで、攻撃のアニメーションをもう一度流します。',
       'ui.config': '防御の構成',
@@ -106,19 +117,156 @@ const CdnMessages = (() => {
       'help.learning.3': 'CDNなしのIP制限は構成ミスである。',
       'tip.cdn': '大量のリクエストを吸収します。このモデルではアプリ層攻撃の中身を検査しません。',
       'tip.waf': 'オリジンの手前でアプリ層攻撃を止めます。このモデルでは大量のリクエストを吸収しません。',
-      'tip.iplimit': 'オリジン側でCDNのIPアドレスからの接続だけを許可します。CDNが無効なら正規の利用者も届きません。'
+      'tip.iplimit': 'オリジン側でCDNのIPアドレスからの接続だけを許可します。CDNが無効なら正規の利用者も届きません。',
+      'footer.github': '🔗 GitHubリポジトリーはこちら（',
+      'footer.close': '）'
+    },
+    en: {
+      'scenario.app-domain.long': 'Send an application-layer attack, such as SQL injection, through the domain',
+      'scenario.app-domain.short': 'App layer, via domain',
+      'scenario.flood-domain.long': 'Send a flood of requests (DDoS) through the domain',
+      'scenario.flood-domain.short': 'Flood, via domain',
+      'scenario.app-direct.long': 'Find the origin IP address and send an application-layer attack to it, bypassing the CDN',
+      'scenario.app-direct.short': 'App layer, straight to origin',
+      'scenario.flood-direct.long': 'Send a flood of requests to the origin IP address, bypassing the CDN',
+      'scenario.flood-direct.short': 'Flood, straight to origin',
+      'result.cdn': 'Absorbed by the CDN',
+      'result.ip': 'Blocked by the IP restriction',
+      'result.waf': 'Blocked by the WAF',
+      'result.reached.app': 'Reached the origin',
+      'result.reached.flood': 'The origin is overloaded',
+      'cell.cdn': 'CDN',
+      'cell.ip': 'IP',
+      'cell.waf': 'WAF',
+      'cell.reached': 'Reaches💥',
+      'cell.on': '✅',
+      'cell.off': '❌',
+      'cell.score': '{n}/4',
+      'cell.users.true': 'Reach',
+      'cell.users.false': 'Blocked',
+      'level.best': 'Best',
+      'level.high': 'High',
+      'level.low': 'Low',
+      'level.worst': 'Worst',
+      // Kept short: the level column is nowrap, and a longer word pushes the table into scrolling.
+      'level.misconfig': 'Misconfig',
+      'score': 'Attacks blocked: {n}/4',
+      'users.true': 'Legitimate users: reach the origin',
+      'users.false': 'Legitimate users: blocked',
+      'explanation.1': 'The CDN is disabled, yet the origin still admits the CDN IP addresses only. '
+        + 'Every attack stops, but legitimate users are shut out as well, so the service cannot run.',
+      'explanation.2': 'A CDN does not inspect the contents of a request, so application-layer attacks '
+        + 'such as SQL injection pass straight through.',
+      'explanation.3': 'Nothing absorbs the flood of requests, so the origin is overloaded. '
+        + 'With the CDN disabled, the domain route and the direct route are the same road.',
+      'explanation.4': 'Once the origin IP address is known, an attacker bypasses the CDN and hits the origin directly. '
+        + 'Refusing connections from anywhere but the CDN (an IP restriction) prevents this.',
+      'explanation.5': 'This configuration stops all four attacks and still lets legitimate users reach the origin.',
+      'assumption.1': 'Traffic through the domain travels attacker to CDN (when enabled) to the origin entrance '
+        + '(IP restriction) to the WAF to the origin.',
+      'assumption.2': 'Traffic straight to the origin (a CDN bypass) travels attacker to the origin entrance '
+        + '(IP restriction) to the WAF to the origin, never touching the CDN.',
+      'assumption.3': 'The WAF sits immediately in front of the origin, for example on a load balancer.',
+      'assumption.4': 'The IP restriction at the origin entrance admits connections from the CDN IP addresses only.',
+      'assumption.5': 'The CDN absorbs floods of requests but does not inspect the contents of application-layer attacks. '
+        + 'The WAF stops application-layer attacks but does not absorb floods of requests.',
+      'assumption.6': 'When the CDN is disabled, the domain points straight at the origin.',
+      'node.client': 'Attacker',
+      'node.cdn': 'CDN',
+      'node.ip': 'IP limit',
+      'node.waf': 'WAF',
+      'node.origin': 'Origin',
+      'node.disabled': 'Disabled',
+      'icon.client': '👤',
+      'icon.cdn': '☁️',
+      'icon.ip': '🚧',
+      'icon.waf': '🧱',
+      'icon.origin': '🖥️',
+      'icon.attack': '🔥',
+      'icon.blocked': '🛡️',
+      'icon.reached': '💥',
+      'app.title': 'CDN Trainer - Interactive tool for learning secure CDN configurations',
+      'app.subtitle.1': 'What does your server look like to an attacker?',
+      'app.subtitle.2': 'Try CDN, WAF and origin configurations for yourself and see how they differ.',
+      'ui.langButton': 'JA',
+      'ui.langAria': '日本語',
+      'ui.customConfig': '🛠 Custom configuration',
+      'ui.enableCdn': 'Enable the CDN',
+      'ui.enableWaf': 'Enable the WAF',
+      'ui.enableIplimit': 'Restrict the origin by IP address',
+      'ui.replay': 'Replay the attack',
+      'ui.replayTip': 'Plays the attack animation again with the same configuration and scenario.',
+      'ui.config': 'Defenses',
+      'ui.scenario': 'Attack scenario',
+      'ui.assumptions': 'Assumptions behind this diagram',
+      'ui.diagram': 'Configuration diagram',
+      'ui.diagramDescription': 'Shows which gates the selected attack passes and where it stops.',
+      'ui.diagramLabel': '{scenario}: {result}',
+      'ui.diagnosis': 'Diagnosis',
+      'ui.diagnosisDescription': 'Shows how the four attacks fare and whether legitimate users reach the origin.',
+      'ui.patternShow': 'Show the table',
+      'ui.patternHide': 'Hide the table',
+      'ui.patternTitle': 'Security rating of the eight configurations',
+      'ui.patternTip': 'Compares the attack results and legitimate-user access of the eight configurations.',
+      'ui.tableRegion': 'Ratings of the eight configurations (scrolls sideways)',
+      'ui.tableBlocked': 'Blocked',
+      'ui.tableUsers': 'Users',
+      'ui.tableLevel': 'Level',
+      'ui.dark': 'Switch to dark mode',
+      'ui.light': 'Switch to light mode',
+      'ui.helpOpen': 'Show help',
+      'ui.helpClose': 'Close',
+      'ui.helpTitle': 'CDN Trainer help',
+      'help.aboutTitle': 'About this tool',
+      'help.about': 'A tool for learning what a CDN, a WAF and an IP restriction do, and which route an attack takes.',
+      'help.usageTitle': 'How to use it',
+      'help.usage.1': 'Choose a configuration and a scenario.',
+      'help.usage.2': 'Read the diagram and the diagnosis. Replaying the attack shows the same state again.',
+      'help.usage.3': 'Open the table and compare the eight configurations.',
+      'help.scenariosTitle': 'The four scenarios',
+      'help.assumptionsTitle': 'Assumptions',
+      'help.levelsTitle': 'How the levels are decided',
+      'help.level.misconfig': 'Misconfig: legitimate users cannot reach the origin. This outweighs the number blocked.',
+      'help.level.best': 'Best: all four attacks are blocked and legitimate users reach the origin.',
+      'help.level.high': 'High: three attacks are blocked and legitimate users reach the origin.',
+      'help.level.low': 'Low: one or two attacks are blocked and legitimate users reach the origin.',
+      'help.level.worst': 'Worst: not one attack is blocked.',
+      'help.learningTitle': 'Points to take away',
+      'help.learning.1': 'A CDN on its own does not stop application-layer attacks.',
+      'help.learning.2': 'Once the origin IP address is known, the CDN can be bypassed.',
+      'help.learning.3': 'An IP restriction without a CDN is a misconfiguration.',
+      'tip.cdn': 'Absorbs floods of requests. In this model it does not inspect the contents of application-layer attacks.',
+      'tip.waf': 'Stops application-layer attacks in front of the origin. In this model it does not absorb floods.',
+      'tip.iplimit': 'Admits connections to the origin from the CDN IP addresses only. '
+        + 'With the CDN disabled, legitimate users are shut out too.',
+      'footer.github': '🔗 GitHub repository (',
+      'footer.close': ')'
     }
   };
 
+  let language = 'ja';
+
+  function getLanguage() {
+    return language;
+  }
+
+  function setLanguage(value) {
+    if (!LANGUAGES.includes(value)) throw new RangeError(`Unknown language: ${value}`);
+    language = value;
+    return language;
+  }
+
   function t(key, params = {}) {
-    const dictionary = dictionaries.ja;
+    const dictionary = dictionaries[language];
     if (!Object.hasOwn(dictionary, key)) throw new Error(`Unknown message key: ${key}`);
     return dictionary[key].replace(/\{(\w+)\}/g, (match, name) =>
       Object.hasOwn(params, name) ? String(params[name]) : match
     );
   }
 
-  return Object.freeze({ t, keys: Object.freeze(Object.keys(dictionaries.ja)) });
+  return Object.freeze({
+    LANGUAGES, dictionaries, t, getLanguage, setLanguage, keys: Object.freeze(Object.keys(dictionaries.ja))
+  });
 })();
 
 if (typeof module !== 'undefined' && module.exports) {

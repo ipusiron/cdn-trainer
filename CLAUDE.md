@@ -8,17 +8,19 @@ CDN Trainer is an educational web tool for learning about CDN, WAF, and origin s
 
 ## Architecture
 
-This is a vanilla JavaScript application with five runtime files:
+This is a vanilla JavaScript application with six runtime files:
 
 - `index.html` - Configuration and scenario controls, diagram, diagnosis, table, help, meta CSP
-- `cdn-messages.js` - DOM-independent Japanese message dictionary and interpolation
+- `cdn-messages.js` - DOM-independent Japanese and English message dictionaries and interpolation
+- `i18n.js` - Language selection, storage and `data-i18n` application. Holds no dictionary
 - `cdn-model.js` - DOM-independent evaluation, paths and coordinates
 - `script.js` - DOM rendering, one animation loop, diagnosis, table, help and theme controls
 - `style.css` - Responsive styling, diagram classes and light/dark color variables
 
 The application compares four attack scenarios across eight configurations. It reports
 blocked attacks out of four, legitimate-user reachability and one of five security levels.
-`assets/` contains three README screenshots; `test/` contains seven test files.
+`assets/` contains three README screenshots; `test/` contains eight test files.
+`README.md` is Japanese and `README.en.md` is English; the two cross-link at the top.
 
 ## Development Commands
 
@@ -56,9 +58,10 @@ eight-row result table is checked cell by cell against the model and dictionary.
 - Store the requestAnimationFrame ID and cancel it before replaying; keep only one loop.
 - Traverse the path at constant speed in 1600ms, or show the endpoint immediately for reduced motion.
 - The dark-mode toggle changes CSS only and does not rebuild or restart the diagram.
-- Save only the `darkMode` boolean string in localStorage; catch read and write failures.
+- Save only the `darkMode` boolean string and the language choice in localStorage; catch read and write
+  failures. The language key lives in `i18n.js` so that `script.js` keeps its two theme accesses.
 - Keep the strict meta CSP. Do not use style attributes, inline handlers, inline scripts or innerHTML.
-- Load classic scripts in message, model, UI order. ES modules would break direct file:// usage.
+- Load classic scripts in message, language, model, UI order. ES modules would break direct file:// usage.
 - Keep the model and message dictionary compatible with CommonJS through conditional module.exports.
 - Add no external API, CDN, font, framework or npm dependency.
 
@@ -66,6 +69,7 @@ eight-row result table is checked cell by cell against the model and dictionary.
 
 - `test/model.test.js` - Eight configurations, four scenarios, paths, 12 coordinate fixtures and properties
 - `test/messages.test.js` - Dictionary keys, interpolation and no Japanese literals in model/UI code
+- `test/i18n.test.js` - Matching ja/en dictionaries, key coverage, language selection and in-place switching
 - `test/html.test.js` - CSP, referrer, ARIA, IDs, scenarios and absence of inline code
 - `test/script.test.js` - Safe DOM rendering, animation cancellation and storage exception handling
 - `test/contrast.test.js` - All 16 foreground/background pairs in both themes, at least 4.5:1
@@ -86,9 +90,23 @@ Do not weaken fixtures to make tests pass. Retest HTTP and file:// behavior afte
 
 ## Language
 
-Documentation and UI text are in Japanese. Keep generated Japanese text and emoji in
-`cdn-messages.js`, under the `ja` dictionary. Use `CdnMessages.t(key, params)` in the UI;
-unknown keys throw. Do not add Japanese literals to `script.js` or `cdn-model.js` (comments excepted).
+The interface is available in Japanese and English. Keep every piece of generated text and emoji in
+`cdn-messages.js`, with the same key in both the `ja` and the `en` dictionary. Use
+`CdnMessages.t(key, params)` in the UI; unknown keys throw. Do not add Japanese literals to
+`script.js` or `cdn-model.js` (comments excepted).
+
+- Fixed text is marked `data-i18n="key"` in the HTML; attributes use `data-i18n-aria-label`,
+  `data-i18n-title`, `data-i18n-placeholder` or `data-i18n-alt`.
+- `CdnI18n.translate()` replaces `textContent`, so never put `data-i18n` on an element that owns
+  child elements. Wrap the inner text in a `<span>` instead.
+- Text or attributes that follow interactive state (the pattern-table label, the dark-mode
+  `aria-label`) must stay out of `data-i18n` and be rebuilt in `renderGenerated()`, which runs on the
+  `language-change` event. Applying `data-i18n` to them would roll the state back.
+- Lists generated into the initially hidden help dialog and the collapsed assumptions are rebuilt by
+  `renderStaticLists()` on every language change; nothing depends on the HTML fallback text.
+- `<noscript>` cannot be translated at runtime, so it carries both languages.
+- The language comes from `?lang=ja|en`, then localStorage, then `navigator.language`.
+
 The project is part of the "100 Security Tools with Generative AI" series (Day 026).
 
 ## Staged Development

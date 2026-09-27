@@ -6,17 +6,20 @@
     content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="referrer" content="no-referrer" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CDN Trainer</title>
+  <title data-i18n="app.title">CDN Trainer - セキュアなCDN構成を学べる体験型ツール</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:," />
 </head>
 <body>
-  <noscript>このツールはJavaScriptを使います。</noscript>
+  <noscript>このツールはJavaScriptを使います。<br />This tool needs JavaScript.</noscript>
   <header>
     <div class="header-content">
       <h1>CDN Trainer</h1>
       <div class="header-buttons">
-        <button type="button" id="helpToggle" class="help-toggle" aria-label="ヘルプを表示" title="ヘルプを表示">
+        <button type="button" id="langToggle" class="lang-toggle"
+          aria-label="English" data-i18n-aria-label="ui.langAria" data-i18n="ui.langButton">EN</button>
+        <button type="button" id="helpToggle" class="help-toggle"
+          aria-label="ヘルプを表示" data-i18n-aria-label="ui.helpOpen" title="ヘルプを表示" data-i18n-title="ui.helpOpen">
           ❓
         </button>
         <button type="button" id="darkModeToggle" class="dark-mode-toggle"
@@ -27,42 +30,42 @@
       </div>
     </div>
     <p class="subtitle">
-      攻撃者から見えるサーバーの姿とは？<br />
-      CDN・WAF・オリジン構成の違いを体験しながら学べます。
+      <span data-i18n="app.subtitle.1">攻撃者から見えるサーバーの姿とは？</span><br />
+      <span data-i18n="app.subtitle.2">CDN・WAF・オリジン構成の違いを体験しながら学べます。</span>
     </p>
   </header>
 
   <main>
     <section class="custom-config">
-      <h2>🛠 カスタム構成モード</h2>
+      <h2 data-i18n="ui.customConfig">🛠 カスタム構成モード</h2>
       <form id="configForm">
         <fieldset class="defense-options">
-          <legend data-message="ui.config">防御の構成</legend>
+          <legend data-i18n="ui.config">防御の構成</legend>
         <label class="tooltip-container" for="cdn">
-          <input type="checkbox" id="cdn" aria-describedby="cdnTip" checked /> CDNを有効にする
-          <span class="tooltip" id="cdnTip" data-message="tip.cdn">
-            <strong>CDN (Content Delivery Network)</strong><br>
-            世界中のサーバーからコンテンツを配信。DDoS攻撃の緩和やパフォーマンス向上に効果的で、攻撃の第一防御線として機能します。
+          <input type="checkbox" id="cdn" aria-describedby="cdnTip" checked />
+          <span data-i18n="ui.enableCdn">CDNを有効にする</span>
+          <span class="tooltip" id="cdnTip" data-i18n="tip.cdn">
+            大量のリクエストを吸収します。このモデルではアプリ層攻撃の中身を検査しません。
           </span>
         </label>
         <label class="tooltip-container" for="waf">
-          <input type="checkbox" id="waf" aria-describedby="wafTip" checked /> WAFを有効にする
-          <span class="tooltip" id="wafTip" data-message="tip.waf">
-            <strong>WAF (Web Application Firewall)</strong><br>
-            SQLインジェクション、XSSなどのアプリケーション層攻撃を検知・防御。シグネチャベースで悪意のあるリクエストをブロックします。
+          <input type="checkbox" id="waf" aria-describedby="wafTip" checked />
+          <span data-i18n="ui.enableWaf">WAFを有効にする</span>
+          <span class="tooltip" id="wafTip" data-i18n="tip.waf">
+            オリジンの手前でアプリ層攻撃を止めます。このモデルでは大量のリクエストを吸収しません。
           </span>
         </label>
         <label class="tooltip-container" for="iplimit">
-          <input type="checkbox" id="iplimit" aria-describedby="ipTip" checked /> OriginにIP制限をかける
-          <span class="tooltip" id="ipTip" data-message="tip.iplimit">
-            <strong>IP制限 (IP Restriction)</strong><br>
-            特定のIPアドレス（CDN経由など）のみにアクセスを許可。CDNバイパス攻撃を防ぐ最後の防御線で、オリジンサーバーを直接攻撃から守ります。
+          <input type="checkbox" id="iplimit" aria-describedby="ipTip" checked />
+          <span data-i18n="ui.enableIplimit">OriginにIP制限をかける</span>
+          <span class="tooltip" id="ipTip" data-i18n="tip.iplimit">
+            オリジン側でCDNのIPアドレスからの接続だけを許可します。CDNが無効なら正規の利用者も届きません。
           </span>
         </label>
         </fieldset>
         <button type="button" id="replayButton" class="tooltip-container" aria-describedby="replayTip">
-          <span data-message="ui.replay">攻撃を再生</span>
-          <span class="tooltip" id="replayTip" data-message="ui.replayTip">
+          <span data-i18n="ui.replay">攻撃を再生</span>
+          <span class="tooltip" id="replayTip" data-i18n="ui.replayTip">
             同じ構成とシナリオで、攻撃のアニメーションをもう一度流します。
           </span>
         </button>
@@ -71,36 +74,36 @@
 
     <section class="diagram-section">
       <fieldset class="scenario-options">
-        <legend data-message="ui.scenario">攻撃のシナリオ</legend>
+        <legend data-i18n="ui.scenario">攻撃のシナリオ</legend>
         <label for="scenarioAppDomain">
           <input id="scenarioAppDomain" type="radio" name="scenario" value="app-domain" checked />
-          <span data-message="scenario.app-domain.long">アプリ層攻撃（SQLインジェクションなど）をドメイン経由で送る</span>
+          <span data-i18n="scenario.app-domain.long">アプリ層攻撃（SQLインジェクションなど）をドメイン経由で送る</span>
         </label>
         <label for="scenarioFloodDomain">
           <input id="scenarioFloodDomain" type="radio" name="scenario" value="flood-domain" />
-          <span data-message="scenario.flood-domain.long">大量のリクエスト（DDoS）をドメイン経由で送る</span>
+          <span data-i18n="scenario.flood-domain.long">大量のリクエスト（DDoS）をドメイン経由で送る</span>
         </label>
         <label for="scenarioAppDirect">
           <input id="scenarioAppDirect" type="radio" name="scenario" value="app-direct" />
-          <span data-message="scenario.app-direct.long">オリジンのIPアドレスを突き止め、CDNを通さずにアプリ層攻撃を送る</span>
+          <span data-i18n="scenario.app-direct.long">オリジンのIPアドレスを突き止め、CDNを通さずにアプリ層攻撃を送る</span>
         </label>
         <label for="scenarioFloodDirect">
           <input id="scenarioFloodDirect" type="radio" name="scenario" value="flood-direct" />
-          <span data-message="scenario.flood-direct.long">オリジンのIPアドレスへ、CDNを通さずに大量のリクエストを送る</span>
+          <span data-i18n="scenario.flood-direct.long">オリジンのIPアドレスへ、CDNを通さずに大量のリクエストを送る</span>
         </label>
       </fieldset>
-      <h2 data-message="ui.diagram">構成図</h2>
-      <p class="section-description" data-message="ui.diagramDescription">選んだ攻撃がどの関門を通り、どこで止まるかを表示します。</p>
+      <h2 data-i18n="ui.diagram">構成図</h2>
+      <p class="section-description" data-i18n="ui.diagramDescription">選んだ攻撃がどの関門を通り、どこで止まるかを表示します。</p>
       <div id="diagram" class="diagram-box"></div>
       <details class="assumptions">
-        <summary data-message="ui.assumptions">この図の前提</summary>
+        <summary data-i18n="ui.assumptions">この図の前提</summary>
         <ul id="diagramAssumptions"></ul>
       </details>
     </section>
 
     <section class="diagnosis-section">
-      <h2 data-message="ui.diagnosis">診断コメント</h2>
-      <p class="section-description" data-message="ui.diagnosisDescription">4つの攻撃への防御と、正規の利用者が届くかを表示します。</p>
+      <h2 data-i18n="ui.diagnosis">診断コメント</h2>
+      <p class="section-description" data-i18n="ui.diagnosisDescription">4つの攻撃への防御と、正規の利用者が届くかを表示します。</p>
       <div id="diagnosis" class="diagnosis-box" role="status" aria-live="polite"></div>
     </section>
 
@@ -108,8 +111,8 @@
       <button type="button" id="patternToggle" class="toggle-switch tooltip-container"
         aria-expanded="false" aria-controls="patternTableSection" aria-describedby="patternTip">
         <span class="slider" aria-hidden="true"></span>
-        <span class="toggle-label" data-message="ui.patternShow">一覧を表示</span>
-        <span class="tooltip" id="patternTip" data-message="ui.patternTip">
+        <span class="toggle-label">一覧を表示</span>
+        <span class="tooltip" id="patternTip" data-i18n="ui.patternTip">
           8構成の攻撃結果と正規の利用者の到達可否を比較できます。
         </span>
       </button>
@@ -117,8 +120,9 @@
 
     <section class="pattern-table-section" id="patternTableSection" hidden>
       <div class="pattern-table-content">
-        <h2 data-message="ui.patternTitle">8パターンのセキュリティ評価一覧</h2>
-        <div class="table-scroll" tabindex="0" role="region" aria-label="8パターンの評価一覧（横にスクロールできます）">
+        <h2 data-i18n="ui.patternTitle">8パターンのセキュリティ評価一覧</h2>
+        <div class="table-scroll" tabindex="0" role="region"
+          aria-label="8パターンの評価一覧（横にスクロールできます）" data-i18n-aria-label="ui.tableRegion">
           <table class="pattern-table">
             <thead></thead>
             <tbody></tbody>
@@ -132,26 +136,26 @@
   <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="helpTitle" data-message="ui.helpTitle">CDN Trainerヘルプ</h2>
-        <button type="button" class="close" aria-label="閉じる">&times;</button>
+        <h2 id="helpTitle" data-i18n="ui.helpTitle">CDN Trainerヘルプ</h2>
+        <button type="button" class="close" aria-label="閉じる" data-i18n-aria-label="ui.helpClose">&times;</button>
       </div>
       <div class="modal-body">
-        <h3 data-message="help.aboutTitle">このツールについて</h3>
-        <p data-message="help.about">CDN・WAF・IP制限の役割と、攻撃が通る経路を学ぶツールです。</p>
+        <h3 data-i18n="help.aboutTitle">このツールについて</h3>
+        <p data-i18n="help.about">CDN・WAF・IP制限の役割と、攻撃が通る経路を学ぶツールです。</p>
 
-        <h3 data-message="help.usageTitle">使い方</h3>
+        <h3 data-i18n="help.usageTitle">使い方</h3>
         <ol id="helpUsage"></ol>
 
-        <h3 data-message="help.scenariosTitle">4つのシナリオ</h3>
+        <h3 data-i18n="help.scenariosTitle">4つのシナリオ</h3>
         <ul id="helpScenarios"></ul>
 
-        <h3 data-message="help.assumptionsTitle">前提</h3>
+        <h3 data-i18n="help.assumptionsTitle">前提</h3>
         <ul id="helpAssumptions"></ul>
 
-        <h3 data-message="help.levelsTitle">レベルの基準</h3>
+        <h3 data-i18n="help.levelsTitle">レベルの基準</h3>
         <ul id="helpLevels"></ul>
 
-        <h3 data-message="help.learningTitle">学習のポイント</h3>
+        <h3 data-i18n="help.learningTitle">学習のポイント</h3>
         <ul id="helpLearning"></ul>
       </div>
     </div>
@@ -159,14 +163,15 @@
 
   <footer>
     <div class="footer">
-      🔗 GitHubリポジトリーはこちら（
+      <span data-i18n="footer.github">🔗 GitHubリポジトリーはこちら（</span>
       <a href="https://github.com/ipusiron/cdn-trainer" target="_blank" rel="noopener noreferrer">
         ipusiron/cdn-trainer
-      </a>）
+      </a><span data-i18n="footer.close">）</span>
     </div>
   </footer>
 
   <script src="cdn-messages.js"></script>
+  <script src="i18n.js"></script>
   <script src="cdn-model.js"></script>
   <script src="script.js"></script>
 </body>
