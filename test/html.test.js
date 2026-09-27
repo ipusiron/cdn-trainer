@@ -22,12 +22,14 @@ test('strict CSP, referrer and noscript match H-1 and H-2', () => {
   ]);
   assert.doesNotMatch(csp.attrs.content, /unsafe-inline|unsafe-eval|frame-ancestors/);
   assert.equal(tags.find((tag) => tag.tag === 'meta' && tag.attrs.name === 'referrer').attrs.content, 'no-referrer');
-  assert.match(html, /<noscript>このツールはJavaScriptを使います。<\/noscript>/);
+  // The noscript text cannot be translated at runtime, so both languages are written out.
+  assert.match(html, /<noscript>このツールはJavaScriptを使います。<br \/>This tool needs JavaScript\.<\/noscript>/);
 });
 
-test('three local classic scripts are loaded in H-7 order', () => {
+test('four local classic scripts are loaded in H-7 order', () => {
   const scripts = tags.filter((tag) => tag.tag === 'script');
-  assert.deepEqual(scripts.map((tag) => tag.attrs.src), ['cdn-messages.js', 'cdn-model.js', 'script.js']);
+  assert.deepEqual(scripts.map((tag) => tag.attrs.src),
+    ['cdn-messages.js', 'i18n.js', 'cdn-model.js', 'script.js']);
   scripts.forEach((tag) => assert.equal(tag.attrs.type, undefined));
   assert.doesNotMatch(html, /<script\b[^>]*>\s*\S[^<]*<\/script>/);
 });
@@ -46,7 +48,7 @@ test('main ids exist exactly once and every explicit label points to an element'
   assert.equal(ids.length, new Set(ids).size);
   for (const id of [
     'cdn', 'waf', 'iplimit', 'replayButton', 'diagram', 'diagnosis', 'patternToggle',
-    'patternTableSection', 'helpToggle', 'darkModeToggle', 'helpModal'
+    'patternTableSection', 'langToggle', 'helpToggle', 'darkModeToggle', 'helpModal'
   ]) assert.ok(byId(id), id);
   tags.filter((tag) => tag.tag === 'label' && tag.attrs.for).forEach((tag) => assert.ok(byId(tag.attrs.for), tag.attrs.for));
 });
@@ -70,7 +72,7 @@ test('dialog, status and table toggle use accessible semantics', () => {
   assert.equal(byId('patternToggle').attrs['aria-expanded'], 'false');
   assert.equal(byId('patternToggle').attrs['aria-controls'], 'patternTableSection');
   assert.match(byId('patternTableSection').source, /\shidden\b/);
-  for (const id of ['helpToggle', 'darkModeToggle']) assert.ok(byId(id).attrs['aria-label']);
+  for (const id of ['langToggle', 'helpToggle', 'darkModeToggle']) assert.ok(byId(id).attrs['aria-label']);
   assert.equal(byId('darkModeToggle').attrs['aria-pressed'], 'false');
   assert.ok(tags.filter((tag) => tag.tag === 'button').every((tag) => tag.attrs.type === 'button'));
 });
@@ -79,5 +81,5 @@ test('table results are generated, and visible-text keys all resolve', () => {
   const tbody = /<tbody[^>]*>([\s\S]*?)<\/tbody>/.exec(html);
   assert.ok(tbody);
   assert.doesNotMatch(tbody[1], /<tr\b/);
-  tags.filter((tag) => tag.attrs['data-message']).forEach((tag) => assert.ok(messages.t(tag.attrs['data-message'])));
+  tags.filter((tag) => tag.attrs['data-i18n']).forEach((tag) => assert.ok(messages.t(tag.attrs['data-i18n'])));
 });

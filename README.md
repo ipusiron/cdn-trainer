@@ -33,6 +33,8 @@ hub: true
 ---
 -->
 
+[English](README.en.md) · 日本語
+
 # CDN Trainer - セキュアなCDN構成を学べる体験型ツール
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/cdn-trainer?style=social)
@@ -80,6 +82,7 @@ hub: true
 - 防げた攻撃の数、正規の利用者の到達可否、5段階のレベルによる診断
 - 現在の構成を強調する8パターン一覧表
 - ダークモードと設定の保存、前提と使い方を確認するヘルプ
+- 日本語と英語の切り替え（`?lang=ja` / `?lang=en`、選択は保存される）
 - キーボード操作、動きを減らす設定、スマートフォン表示への対応
 
 ---
@@ -92,6 +95,7 @@ hub: true
 4. 同じ状態を見直すときは「攻撃を再生」を押す。
 5. 「一覧を表示」で8構成を比較する。狭い画面では図や表の箱を横にスクロールする。
 6. ヘルプボタンで前提やレベルの基準を確認する。Escでも閉じられる。
+7. ヘッダーの「EN」ボタンで英語表示に切り替える。構成・シナリオ・一覧の開閉はそのまま残る。
 
 はじめはすべて有効にし、オリジン直撃のアプリ層攻撃を選ぶと、IP制限で止まる様子を確認できます。
 次にWAFだけを外し、ドメイン経由のアプリ層攻撃に切り替えると、CDNとIP制限を通過してオリジンに届きます。
@@ -197,7 +201,7 @@ VPC originsでは、プライベートサブネットのALBなどを公開イン
 - referrerを`no-referrer`に設定する。
 - 表示はDOM APIと`textContent`で組み立てる。`innerHTML`は使わない。
 - アプリの動作中に外部API・CDN・フォントへ通信しない。
-- localStorageに保存するのはダークモード設定だけである。保存できなくても動作する。
+- localStorageに保存するのはダークモード設定と言語の選択だけである。保存できなくても動作する。
 
 ---
 
@@ -245,6 +249,7 @@ npm test
 |---|---|
 | `test/model.test.js` | 8構成×4シナリオの結果、経路、座標、不正な入力、モデルの性質 |
 | `test/messages.test.js` | 辞書のキーと置換、モデルと画面処理に日本語リテラルがないこと |
+| `test/i18n.test.js` | 日英の辞書の一致、画面とコードが呼ぶキー、言語の選択と保存、状態を壊さない切り替え |
 | `test/html.test.js` | CSP・referrer・ARIA・シナリオ・インラインコードの不使用 |
 | `test/script.test.js` | DOM API、rAFの取り消し、localStorageの例外処理 |
 | `test/contrast.test.js` | ライト・ダークの全配色のコントラスト比4.5:1以上 |
@@ -265,10 +270,12 @@ cdn-trainer/                 # CDN構成を学ぶ静的Webアプリ
 ├── CLAUDE.md                # 開発ガイド（構成・コマンド・判定モデル・テスト）
 ├── LICENSE                  # MITライセンス
 ├── README.md                # 本ファイル（使い方・判定モデル・テスト・構成）
+├── README.en.md             # 英語版のREADME
 ├── package.json             # npm testの定義。依存パッケージなし
 ├── index.html               # 画面・構成選択・シナリオ・ヘルプ・meta CSP
 ├── style.css                # 配色変数・ダーク・レスポンシブ・構成図
-├── cdn-messages.js          # 画面の文言の辞書（JSが出す日本語を集約）
+├── cdn-messages.js          # 画面の文言の日英辞書（JSが出す文言を集約）
+├── i18n.js                  # 言語の選択と保存、data-i18nの適用。辞書は持たない
 ├── cdn-model.js             # 4シナリオ×8構成の判定・経路・座標。DOM非依存
 ├── script.js                # 構成図の描画と再生・診断・一覧・ヘルプ・ダーク
 ├── assets/                  # README用の画像
@@ -278,6 +285,7 @@ cdn-trainer/                 # CDN構成を学ぶ静的Webアプリ
 └── test/                    # node --testによる自動テスト
     ├── model.test.js        # 判定結果・経路・座標の期待値と性質
     ├── messages.test.js     # 辞書のキーとJSの日本語リテラルの検査
+    ├── i18n.test.js         # 日英の辞書の一致・キーの網羅・言語の選択と保存
     ├── html.test.js         # HTMLのCSP・referrer・ARIA・style属性なし
     ├── script.test.js       # DOM API・rAF取り消し・保存の例外処理
     ├── contrast.test.js     # ライト・ダークのコントラスト比

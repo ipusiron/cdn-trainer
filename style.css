@@ -422,6 +422,30 @@ body.dark-mode .label-reached {
   }
 }
 
+/* 言語切り替えボタン */
+.lang-toggle {
+  background: none;
+  border: 2px solid var(--header-text);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--header-text);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lang-toggle:hover {
+  transform: scale(1.1);
+}
+
 /* ヘルプボタン */
 .help-toggle {
   background: none;
@@ -907,6 +931,7 @@ h2 {
   outline-color: var(--header-text);
 }
 
+body.dark-mode .lang-toggle,
 body.dark-mode .help-toggle,
 body.dark-mode .dark-mode-toggle,
 body.dark-mode .close {

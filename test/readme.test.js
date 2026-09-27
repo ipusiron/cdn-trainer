@@ -4,14 +4,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const model = require('../cdn-model.js');
-const { t } = require('../cdn-messages.js');
+const { t, setLanguage } = require('../cdn-messages.js');
 const root = path.join(__dirname, '..');
 const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8').replace(/\r\n/g, '\n');
+const english = fs.readFileSync(path.join(root, 'README.en.md'), 'utf8').replace(/\r\n/g, '\n');
 
-function section(title, level = 2) {
+function section(title, level = 2, source = readme) {
   const heading = `${'#'.repeat(level)} ${title}\n`;
-  assert.ok(readme.includes(heading), heading);
-  return readme.split(heading)[1].split(new RegExp(`\\n#{1,${level}} `))[0];
+  assert.ok(source.includes(heading), heading);
+  return source.split(heading)[1].split(new RegExp(`\\n#{1,${level}} `))[0];
 }
 
 test('README eight configurations match the model and dictionary in all ten cells', () => {
@@ -94,9 +95,9 @@ test('README references all three screenshots and each has one caption', () => {
   assert.equal((section('📸 スクリーンショット').match(/^> \*.+\*$/gm) || []).length, 3);
 });
 
-test('README explains seven tests and has one learning section without the old score', () => {
+test('README explains eight tests and has one learning section without the old score', () => {
   const names = fs.readdirSync(__dirname).filter((name) => name.endsWith('.test.js'));
-  assert.equal(names.length, 7);
+  assert.equal(names.length, 8);
   names.forEach((name) => assert.ok(section('🧪 テスト').includes(`test/${name}`), name));
   assert.equal((readme.match(/^## .*?(?:セキュリティ)?学習のポイント$/gm) || []).length, 1);
   assert.doesNotMatch(readme, /n\/3|3項目で判定|npx serve|Certificate Pinning/);
@@ -107,4 +108,49 @@ test('README model assumptions and level criteria agree with help dictionary', (
   for (let n = 1; n <= 6; n += 1) assert.ok(assumptions.includes(t(`assumption.${n}`)));
   const levels = section('レベルの基準', 3);
   for (const key of ['misconfig', 'best', 'high', 'low', 'worst']) assert.ok(levels.includes(t(`help.level.${key}`)));
+});
+
+// Entries keep their depth so that a file moved between directories is still caught.
+function treeEntries(source, title) {
+  const tree = section(title, 2, source).match(/```text\n([\s\S]*?)\n```/);
+  assert.ok(tree, title);
+  return tree[1].split('\n').map((line) => {
+    const match = line.match(/^((?:(?:│ {3}| {4}))*)(?:(?:├── |└── ))?([^#]+?) {2,}# \S/u);
+    assert.ok(match, `annotated tree line: ${line}`);
+    return `${match[1].length / 4}:${match[2].trim()}`;
+  });
+}
+
+test('both READMEs cross-link, and README.en.md mirrors the tree, screenshots and test list', () => {
+  // The language links sit after the YAML comment so that the metadata stays at the top of README.md.
+  assert.ok(readme.includes('-->\n\n[English](README.en.md) · 日本語\n'));
+  assert.ok(english.startsWith('English · [日本語](README.md)\n'));
+  assert.deepEqual(treeEntries(english, '📁 Directory structure'), treeEntries(readme, '📁 ディレクトリー構造'));
+  const images = (source) => [...source.matchAll(/!\[[^\]]*\]\((assets\/[^)]+)\)/g)].map((match) => match[1]);
+  assert.deepEqual(images(english), images(readme));
+  const tests = section('🧪 Tests', 2, english);
+  fs.readdirSync(__dirname).forEach((name) => assert.ok(tests.includes(`test/${name}`), name));
+  assert.equal((english.match(/^## .*Learning points$/gm) || []).length, 1);
+  const body = english.replace('English · [日本語](README.md)', '');
+  assert.doesNotMatch(body, /[぀-ヿ一-鿿！-｠]/u, 'the English README carries no Japanese');
+});
+
+test('README.en.md eight configurations match the model and the English dictionary', () => {
+  const rows = section('The eight configurations', 3, english).split('\n').filter((line) => /^\| [✅❌]/u.test(line));
+  assert.equal(rows.length, 8);
+  const actual = rows.map((row) => row.split('|').slice(1, -1).map((cell) => cell.trim()));
+  try {
+    setLanguage('en');
+    const expected = model.CONFIGS.map((config) => {
+      const result = model.evaluate(config);
+      return [
+        ...['cdn', 'waf', 'iplimit'].map((key) => t(config[key] ? 'cell.on' : 'cell.off')),
+        ...result.results.map((entry) => t(`cell.${entry.stoppedAt || 'reached'}`)),
+        t('cell.score', { n: result.blocked }), t(`cell.users.${result.usersReach}`), t(`level.${result.level}`)
+      ];
+    });
+    assert.deepEqual(actual, expected);
+  } finally {
+    setLanguage('ja');
+  }
 });
