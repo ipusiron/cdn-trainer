@@ -154,3 +154,20 @@ test('README.en.md eight configurations match the model and the English dictiona
     setLanguage('ja');
   }
 });
+
+test('ユースケースの「このツールならではの使い方」を cdn-model.js で再計算（日英）', () => {
+  const C = require('../cdn-model.js');
+  const S = (id) => C.SCENARIOS.find((s) => s.id === id);
+  const full = { cdn: true, waf: true, iplimit: true };
+  assert.equal(C.simulate(full, S('flood-domain')).stoppedAt, 'cdn');
+  assert.equal(C.simulate(full, S('flood-direct')).stoppedAt, 'ip');
+  assert.equal(C.simulate({ ...full, iplimit: false }, S('flood-direct')).stoppedAt, null);
+  const ev = C.evaluate(full);
+  assert.deepEqual(ev.results.map((r) => [r.id, r.stoppedAt]),
+    [['app-domain', 'waf'], ['flood-domain', 'cdn'], ['app-direct', 'ip'], ['flood-direct', 'ip']]);
+  assert.equal(ev.blocked, 4);
+  assert.equal(C.legitimateReaches(full), true);
+  for (const md of [readme, english]) {
+    assert.ok(md.includes('CDN') && md.includes('WAF'));
+  }
+});

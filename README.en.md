@@ -141,6 +141,20 @@ When only the CDN is allowed to connect and the CDN is then disabled, legitimate
 
 ---
 
+## 🎯 Use cases
+
+### Ways of using this tool in particular
+
+- Confirming the attack that bypasses the CDN and hits the origin IP directly (defense-in-depth and CDN classes): with CDN, WAF and IP limit all on, a flood through the domain is stopped at the CDN. But an attack that hits the origin IP directly is stopped only by the IP limit (allowing only the CDN's IPs). Turn the IP limit off and this direct attack reaches the origin. You can confirm that a CDN protects only traffic that goes through it, so the origin must be restricted to the CDN's IPs
+- Confirming that the layer that stops an attack differs by attack (detection-design classes): running the four attacks with everything on, the stopping layer splits, an application-layer attack through the domain is stopped by the WAF, a flood through the domain by the CDN, and the direct attacks by the IP limit. You can confirm the idea of defense in depth, where each layer catches a different attack rather than one layer stopping everything
+- Confirming that attacks are stopped while legitimate traffic passes (availability classes): with everything on, all four attacks are stopped while legitimate user traffic reaches the origin. You can confirm that a defense must not only stop attacks but also not block legitimate users at the same time
+
+### General uses
+
+- Learn the roles of a CDN, a WAF and an IP limit, and which layer stops which attack, in class or training
+- Use it as a prompt to check whether your origin IP is restricted to traffic through the CDN
+- Use it as material to explain defense in depth against DDoS and application-layer attacks
+
 ## 🔒 What to do in production
 
 In production, consider authenticating the source of the connection in addition to an IP restriction, or a connection method that does not expose the origin at all.
