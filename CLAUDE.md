@@ -8,18 +8,19 @@ CDN Trainer is an educational web tool for learning about CDN, WAF, and origin s
 
 ## Architecture
 
-This is a vanilla JavaScript application with six runtime files:
+This is a vanilla JavaScript application with seven runtime files:
 
 - `index.html` - Configuration and scenario controls, diagram, diagnosis, table, help, meta CSP
+- `theme-init.js` - Loaded in `<head>`; applies the saved dark theme to `<html>` before the first paint
 - `cdn-messages.js` - DOM-independent Japanese and English message dictionaries and interpolation
 - `i18n.js` - Language selection, storage and `data-i18n` application. Holds no dictionary
 - `cdn-model.js` - DOM-independent evaluation, paths and coordinates
 - `script.js` - DOM rendering, one animation loop, diagnosis, table, help and theme controls
-- `style.css` - Responsive styling, diagram classes and light/dark color variables
+- `style.css` - Responsive styling, diagram classes and light/dark color variables (dark is `html.dark-mode`)
 
 The application compares four attack scenarios across eight configurations. It reports
 blocked attacks out of four, legitimate-user reachability and one of five security levels.
-`assets/` contains three README screenshots; `test/` contains eight test files.
+`assets/` contains three README screenshots; `test/` contains nine test files.
 `README.md` is Japanese and `README.en.md` is English; the two cross-link at the top.
 
 ## Development Commands
@@ -59,9 +60,10 @@ eight-row result table is checked cell by cell against the model and dictionary.
 - Traverse the path at constant speed in 1600ms, or show the endpoint immediately for reduced motion.
 - The dark-mode toggle changes CSS only and does not rebuild or restart the diagram.
 - Save only the `darkMode` boolean string and the language choice in localStorage; catch read and write
-  failures. The language key lives in `i18n.js` so that `script.js` keeps its two theme accesses.
+  failures. The language key lives in `i18n.js`; the theme is read in `theme-init.js` and written in `script.js`.
+  Without a saved value the page is light; the OS setting is not consulted.
 - Keep the strict meta CSP. Do not use style attributes, inline handlers, inline scripts or innerHTML.
-- Load classic scripts in message, language, model, UI order. ES modules would break direct file:// usage.
+- Load `theme-init.js` in `<head>` after the stylesheet, then classic scripts in message, language, model, UI order. ES modules would break direct file:// usage.
 - Keep the model and message dictionary compatible with CommonJS through conditional module.exports.
 - Add no external API, CDN, font, framework or npm dependency.
 
@@ -72,6 +74,7 @@ eight-row result table is checked cell by cell against the model and dictionary.
 - `test/i18n.test.js` - Matching ja/en dictionaries, key coverage, language selection and in-place switching
 - `test/html.test.js` - CSP, referrer, ARIA, IDs, scenarios and absence of inline code
 - `test/script.test.js` - Safe DOM rendering, animation cancellation and storage exception handling
+- `test/theme-init.test.js` - Saved-theme decision, blocked storage and loading in `<head>` after the stylesheet
 - `test/contrast.test.js` - All 16 foreground/background pairs in both themes, at least 4.5:1
 - `test/format.test.js` - Readable line lengths and line counts; no minification
 - `test/readme.test.js` - Result table, YAML metadata structure, full file tree and image references

@@ -10,7 +10,7 @@ const readVariables = (selector) => {
     .map((match) => [match[1], match[2]]));
 };
 const light = readVariables(':root');
-const dark = { ...light, ...readVariables('body.dark-mode') };
+const dark = { ...light, ...readVariables('html.dark-mode') };
 const pairs = [
   ['header and table headings', 'header-text', 'header-bg'],
   ['body', 'text', 'page-bg'],

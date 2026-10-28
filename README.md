@@ -265,6 +265,7 @@ npm test
 | `test/i18n.test.js` | 日英の辞書の一致、画面とコードが呼ぶキー、言語の選択と保存、状態を壊さない切り替え |
 | `test/html.test.js` | CSP・referrer・ARIA・シナリオ・インラインコードの不使用 |
 | `test/script.test.js` | DOM API、rAFの取り消し、localStorageの例外処理 |
+| `test/theme-init.test.js` | 保存したテーマの判定（保存がなければライト）、想定外の値と保存できない環境、`<head>`での読み込み |
 | `test/contrast.test.js` | ライト・ダークの全配色のコントラスト比4.5:1以上 |
 | `test/format.test.js` | ソースとテストの最長行・行数によるminifyの検出 |
 | `test/readme.test.js` | READMEの8パターン表の全セル、YAML構造、ツリー、画像参照 |
@@ -287,6 +288,7 @@ cdn-trainer/                 # CDN構成を学ぶ静的Webアプリ
 ├── package.json             # npm testの定義。依存パッケージなし
 ├── index.html               # 画面・構成選択・シナリオ・ヘルプ・meta CSP
 ├── style.css                # 配色変数・ダーク・レスポンシブ・構成図
+├── theme-init.js            # 最初の描画の前に保存したテーマ（ダーク）を付ける
 ├── cdn-messages.js          # 画面の文言の日英辞書（JSが出す文言を集約）
 ├── i18n.js                  # 言語の選択と保存、data-i18nの適用。辞書は持たない
 ├── cdn-model.js             # 4シナリオ×8構成の判定・経路・座標。DOM非依存
@@ -301,6 +303,7 @@ cdn-trainer/                 # CDN構成を学ぶ静的Webアプリ
     ├── i18n.test.js         # 日英の辞書の一致・キーの網羅・言語の選択と保存
     ├── html.test.js         # HTMLのCSP・referrer・ARIA・style属性なし
     ├── script.test.js       # DOM API・rAF取り消し・保存の例外処理
+    ├── theme-init.test.js   # 保存したテーマの判定と<head>での読み込み
     ├── contrast.test.js     # ライト・ダークのコントラスト比
     ├── format.test.js       # 最長行・行数によるminify検出
     └── readme.test.js       # READMEの表・YAML・ツリー・画像参照

@@ -26,10 +26,10 @@ test('strict CSP, referrer and noscript match H-1 and H-2', () => {
   assert.match(html, /<noscript>このツールはJavaScriptを使います。<br \/>This tool needs JavaScript\.<\/noscript>/);
 });
 
-test('four local classic scripts are loaded in H-7 order', () => {
+test('five local classic scripts are loaded in H-7 order', () => {
   const scripts = tags.filter((tag) => tag.tag === 'script');
   assert.deepEqual(scripts.map((tag) => tag.attrs.src),
-    ['cdn-messages.js', 'i18n.js', 'cdn-model.js', 'script.js']);
+    ['theme-init.js', 'cdn-messages.js', 'i18n.js', 'cdn-model.js', 'script.js']);
   scripts.forEach((tag) => assert.equal(tag.attrs.type, undefined));
   assert.doesNotMatch(html, /<script\b[^>]*>\s*\S[^<]*<\/script>/);
 });

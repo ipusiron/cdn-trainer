@@ -233,6 +233,7 @@ npm test
 | `test/i18n.test.js` | Matching Japanese and English dictionaries, every key the page and the code ask for, language selection and storage, and switching without losing state |
 | `test/html.test.js` | CSP, referrer, ARIA, scenarios and the absence of inline code |
 | `test/script.test.js` | DOM APIs, cancellation of requestAnimationFrame and localStorage exception handling |
+| `test/theme-init.test.js` | The saved-theme decision (light when nothing is saved), unexpected values, blocked storage and loading in `<head>` |
 | `test/contrast.test.js` | A contrast ratio of at least 4.5:1 for every color pair in both themes |
 | `test/format.test.js` | Longest line and line count in sources and tests, to detect minification |
 | `test/readme.test.js` | Every cell of the eight-configuration table, the YAML structure, the tree and the image references |
@@ -255,6 +256,7 @@ cdn-trainer/                 # Static web app for learning CDN configurations
 ├── package.json             # Defines npm test. No dependencies
 ├── index.html               # Screen, configuration, scenarios, help and meta CSP
 ├── style.css                # Color variables, dark mode, responsive rules, diagram
+├── theme-init.js            # Applies the saved theme (dark) before the first paint
 ├── cdn-messages.js          # Japanese and English dictionary of interface text
 ├── i18n.js                  # Language selection, storage and data-i18n. Holds no dictionary
 ├── cdn-model.js             # Verdict, route and coordinates for 4 scenarios by 8 configurations
@@ -269,6 +271,7 @@ cdn-trainer/                 # Static web app for learning CDN configurations
     ├── i18n.test.js         # Matching dictionaries, key coverage, language selection and storage
     ├── html.test.js         # CSP, referrer, ARIA and the absence of style attributes
     ├── script.test.js       # DOM APIs, rAF cancellation and storage exception handling
+    ├── theme-init.test.js   # Saved-theme decision and loading in <head>
     ├── contrast.test.js     # Contrast ratios in light and dark mode
     ├── format.test.js       # Longest line and line count, to detect minification
     └── readme.test.js       # README tables, YAML, tree and image references
