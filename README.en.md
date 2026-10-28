@@ -191,7 +191,6 @@ See [restricting access to load balancers on AWS](https://docs.aws.amazon.com/Am
 
 This model is simplified for teaching. Real CDNs also offer rate limiting and WAF features, and what they can block depends on the product, the contract and the settings.
 The placement of the WAF changes both the route and the outcome; this version fixes it immediately in front of the origin.
-Choosing the placement is planned for a second release.
 
 An IP restriction is not always sufficient. "Best" in this tool is a verdict inside the model, not a guarantee about a real system.
 
