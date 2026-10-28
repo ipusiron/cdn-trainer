@@ -301,28 +301,19 @@ helpModal.addEventListener('keydown', (event) => {
 
 // ダークモード切り替え機能
 const darkModeToggle = document.getElementById('darkModeToggle');
-const body = document.body;
-
-// 保存されたダークモード設定を読み込む
-try {
-  const savedDarkMode = localStorage.getItem('darkMode');
-  if (savedDarkMode === 'true' || savedDarkMode === 'false') {
-    body.classList.toggle('dark-mode', savedDarkMode === 'true');
-  }
-} catch {
-  // Storage is optional: all controls remain usable without persistence.
-}
+// The saved theme is applied to <html> in <head> by theme-init.js, before the first paint.
+const root = document.documentElement;
 
 function updateThemeControl() {
-  const isDark = body.classList.contains('dark-mode');
+  const isDark = root.classList.contains('dark-mode');
   darkModeToggle.setAttribute('aria-pressed', String(isDark));
   darkModeToggle.setAttribute('aria-label', t(isDark ? 'ui.light' : 'ui.dark'));
   darkModeToggle.title = t(isDark ? 'ui.light' : 'ui.dark');
 }
 
 darkModeToggle.addEventListener('click', function() {
-  body.classList.toggle('dark-mode');
-  const isDark = body.classList.contains('dark-mode');
+  root.classList.toggle('dark-mode');
+  const isDark = root.classList.contains('dark-mode');
   try {
     localStorage.setItem('darkMode', String(isDark));
   } catch {

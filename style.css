@@ -229,23 +229,23 @@ button {
   fill: var(--reached);
 }
 
-body.dark-mode .node {
+html.dark-mode .node {
   fill: var(--text);
 }
 
-body.dark-mode .node.is-disabled {
+html.dark-mode .node.is-disabled {
   fill: var(--disabled);
 }
 
-body.dark-mode .route {
+html.dark-mode .route {
   stroke: var(--disabled);
 }
 
-body.dark-mode .label-blocked {
+html.dark-mode .label-blocked {
   fill: var(--blocked);
 }
 
-body.dark-mode .label-reached {
+html.dark-mode .label-reached {
   fill: var(--reached);
 }
 
@@ -513,7 +513,7 @@ body.dark-mode .label-reached {
 }
 
 /* ダークモード */
-body.dark-mode {
+html.dark-mode {
   --header-bg: #1565c0;
   --header-text: #ffffff;
   --page-bg: #1a1a1a;
@@ -540,102 +540,102 @@ body.dark-mode {
   --switch-bg: #9e9e9e;
 }
 
-body.dark-mode header {
+html.dark-mode header {
   background-color: var(--header-bg);
 }
 
-body.dark-mode .dark-mode-toggle .light-icon {
+html.dark-mode .dark-mode-toggle .light-icon {
   display: none;
 }
 
-body.dark-mode .dark-mode-toggle .dark-icon {
+html.dark-mode .dark-mode-toggle .dark-icon {
   display: inline;
 }
 
-body.dark-mode .custom-config h2,
-body.dark-mode .diagram-section h2,
-body.dark-mode .diagnosis-section h2,
-body.dark-mode .pattern-table-content h2 {
+html.dark-mode .custom-config h2,
+html.dark-mode .diagram-section h2,
+html.dark-mode .diagnosis-section h2,
+html.dark-mode .pattern-table-content h2 {
   color: var(--text);
 }
 
-body.dark-mode .diagram-box,
-body.dark-mode .diagnosis-box {
+html.dark-mode .diagram-box,
+html.dark-mode .diagnosis-box {
   background-color: var(--panel-bg);
   border-color: var(--border);
   color: var(--text);
 }
 
-body.dark-mode .diagnosis-box {
+html.dark-mode .diagnosis-box {
   background-color: #3a2a1a;
   border-left-color: #ff9800;
 }
 
-body.dark-mode button {
+html.dark-mode button {
   background-color: var(--button-bg);
   color: var(--button-text);
 }
 
-body.dark-mode button:hover {
+html.dark-mode button:hover {
   background-color: var(--button-bg);
 }
 
-body.dark-mode .pattern-toggle-section {
+html.dark-mode .pattern-toggle-section {
   background-color: var(--panel-bg);
   border-color: var(--border);
 }
 
-body.dark-mode .toggle-label {
+html.dark-mode .toggle-label {
   color: var(--text);
 }
 
-body.dark-mode .slider {
+html.dark-mode .slider {
   background-color: var(--switch-bg);
   box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
-body.dark-mode .toggle-switch[aria-expanded="true"] .slider {
+html.dark-mode .toggle-switch[aria-expanded="true"] .slider {
   background-color: var(--header-bg);
 }
 
-body.dark-mode .pattern-table {
+html.dark-mode .pattern-table {
   background-color: var(--panel-bg);
   color: var(--text);
 }
 
-body.dark-mode .pattern-table th {
+html.dark-mode .pattern-table th {
   background-color: var(--header-bg);
 }
 
-body.dark-mode .pattern-table td {
+html.dark-mode .pattern-table td {
   border-bottom-color: var(--border);
 }
 
-body.dark-mode .level-best {
+html.dark-mode .level-best {
   background-color: var(--best-bg);
 }
 
-body.dark-mode .level-high {
+html.dark-mode .level-high {
   background-color: var(--high-bg);
 }
 
-body.dark-mode .level-low {
+html.dark-mode .level-low {
   background-color: var(--low-bg);
 }
 
-body.dark-mode .level-worst {
+html.dark-mode .level-worst {
   background-color: var(--worst-bg);
 }
 
-body.dark-mode .level-misconfig {
+html.dark-mode .level-misconfig {
   background-color: var(--misconfig-bg);
 }
 
-body.dark-mode .footer {
+html.dark-mode .footer {
   color: var(--muted);
 }
 
-body.dark-mode .footer a {
+html.dark-mode .footer a {
   color: var(--link);
 }
 
@@ -733,24 +733,24 @@ body.dark-mode .footer a {
 }
 
 /* ダークモードのモーダル */
-body.dark-mode .modal-content {
+html.dark-mode .modal-content {
   background-color: var(--panel-bg);
   color: var(--text);
 }
 
-body.dark-mode .modal-header {
+html.dark-mode .modal-header {
   background-color: var(--header-bg);
 }
 
-body.dark-mode .modal-body h3 {
+html.dark-mode .modal-body h3 {
   color: var(--link);
 }
 
-body.dark-mode .modal-body dt {
+html.dark-mode .modal-body dt {
   color: var(--text);
 }
 
-body.dark-mode .modal-body dd {
+html.dark-mode .modal-body dd {
   color: var(--muted);
 }
 
@@ -838,12 +838,12 @@ form label.tooltip-container .tooltip::after {
 }
 
 /* ダークモード用ツールチップ */
-body.dark-mode .tooltip {
+html.dark-mode .tooltip {
   background-color: var(--tooltip-bg);
   color: var(--tooltip-text);
 }
 
-body.dark-mode .tooltip::after {
+html.dark-mode .tooltip::after {
   border-color: var(--tooltip-bg) transparent transparent transparent;
 }
 
@@ -891,12 +891,12 @@ button.tooltip-container .tooltip {
   border-color: transparent transparent var(--tooltip-bg) transparent;
 }
 
-body.dark-mode .toggle-switch.tooltip-container .tooltip::after {
+html.dark-mode .toggle-switch.tooltip-container .tooltip::after {
   border-color: transparent transparent var(--tooltip-bg) transparent;
 }
 
 /* フォーム内のチェックボックスのダークモード調整 */
-body.dark-mode form label.tooltip-container .tooltip::after {
+html.dark-mode form label.tooltip-container .tooltip::after {
   border-color: transparent var(--tooltip-bg) transparent transparent;
 }
 
@@ -931,16 +931,16 @@ h2 {
   outline-color: var(--header-text);
 }
 
-body.dark-mode .lang-toggle,
-body.dark-mode .help-toggle,
-body.dark-mode .dark-mode-toggle,
-body.dark-mode .close {
+html.dark-mode .lang-toggle,
+html.dark-mode .help-toggle,
+html.dark-mode .dark-mode-toggle,
+html.dark-mode .close {
   background: transparent;
   color: var(--header-text);
 }
 
 @media (max-width: 600px) {
-  body.dark-mode form label.tooltip-container .tooltip::after {
+  html.dark-mode form label.tooltip-container .tooltip::after {
     border-color: transparent transparent var(--tooltip-bg) transparent;
   }
 }

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 
-const files = ['cdn-model.js', 'cdn-messages.js', 'i18n.js', 'script.js', 'style.css',
+const files = ['theme-init.js', 'cdn-model.js', 'cdn-messages.js', 'i18n.js', 'script.js', 'style.css',
   ...fs.readdirSync(__dirname).map((name) => `test/${name}`)];
 for (const file of files) {
   test(`line length at most 160: ${file}`, () => {

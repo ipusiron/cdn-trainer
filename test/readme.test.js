@@ -95,9 +95,9 @@ test('README references all three screenshots and each has one caption', () => {
   assert.equal((section('📸 スクリーンショット').match(/^> \*.+\*$/gm) || []).length, 3);
 });
 
-test('README explains eight tests and has one learning section without the old score', () => {
+test('README explains nine tests and has one learning section without the old score', () => {
   const names = fs.readdirSync(__dirname).filter((name) => name.endsWith('.test.js'));
-  assert.equal(names.length, 8);
+  assert.equal(names.length, 9);
   names.forEach((name) => assert.ok(section('🧪 テスト').includes(`test/${name}`), name));
   assert.equal((readme.match(/^## .*?(?:セキュリティ)?学習のポイント$/gm) || []).length, 1);
   assert.doesNotMatch(readme, /n\/3|3項目で判定|npx serve|Certificate Pinning/);

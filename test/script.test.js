@@ -14,12 +14,18 @@ test('UI uses DOM construction and cancelable animation, without legacy renderin
 });
 
 test('every localStorage operation is inside try/catch', () => {
-  const guarded = [...source.matchAll(/\btry\s*\{[\s\S]*?\}\s*catch\b/g)]
-    .map((match) => [match.index, match.index + match[0].length]);
-  const accesses = [...source.matchAll(/localStorage\.(?:getItem|setItem)\s*\(/g)];
-  assert.equal(accesses.length, 2);
-  accesses.forEach((match) => assert.ok(guarded.some(([start, end]) => match.index > start && match.index < end)));
-  assert.match(source, /savedDarkMode === 'true' \|\| savedDarkMode === 'false'/);
+  // The saved theme is read in theme-init.js (in <head>) and written in script.js.
+  const themeInit = fs.readFileSync(path.join(__dirname, '../theme-init.js'), 'utf8');
+  let total = 0;
+  for (const code of [source, themeInit]) {
+    const guarded = [...code.matchAll(/\btry\s*\{[\s\S]*?\}\s*catch\b/g)]
+      .map((match) => [match.index, match.index + match[0].length]);
+    const accesses = [...code.matchAll(/localStorage\.(?:getItem|setItem)\s*\(/g)];
+    total += accesses.length;
+    accesses.forEach((match) => assert.ok(guarded.some(([start, end]) => match.index > start && match.index < end)));
+  }
+  assert.equal(total, 2);
+  assert.match(themeInit, /savedDarkMode === 'true' \|\| savedDarkMode === 'false'/);
 });
 
 test('UI evaluation is delegated to the model and user controls register listeners', () => {
